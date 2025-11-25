@@ -6,7 +6,7 @@ import ScheduleSettings from './event-settings/ScheduleSettings';
 import AnnouncementSettings from './event-settings/AnnouncementSettings';
 import ThemeSettings from './event-settings/ThemeSettings';
 import QRCustomizer from './QRCustomizer';
-import { Calendar, Layout, Megaphone, Palette, QrCode, Image as ImageIcon } from 'lucide-react';
+import { Calendar, Layout, Megaphone, Palette, QrCode, Image as ImageIcon, Tv } from 'lucide-react';
 import Link from 'next/link';
 
 const TABS = [
@@ -55,6 +55,15 @@ export default function EventManager({ event }: { event: any }) {
             >
                 <ImageIcon size={18} />
                 Galeri Yönetimi
+            </Link>
+
+            <Link
+                href={`/e/${event.slug}/live`}
+                target="_blank"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+            >
+                <Tv size={18} />
+                Canlı Vitrin (Live)
             </Link>
           </nav>
         </div>

@@ -200,3 +200,40 @@ export async function uploadCoverImage(eventId: string, formData: FormData) {
     return { success: false, message: 'Yükleme sırasında bir hata oluştu.' };
   }
 }
+
+export async function getLatestPhotos(slug: string, after?: string) {
+  try {
+    const event = await prisma.event.findUnique({
+      where: { slug },
+      select: { id: true }
+    });
+
+    if (!event) return { success: false, photos: [] };
+
+    const where: any = {
+      eventId: event.id,
+      status: 'approved',
+      type: 'image', // Only images for now
+    };
+
+    if (after) {
+      where.createdAt = { gt: new Date(after) };
+    }
+
+    const photos = await prisma.photo.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: 50, // Limit to prevent overload
+      select: {
+        id: true,
+        url: true,
+        createdAt: true,
+      }
+    });
+
+    return { success: true, photos };
+  } catch (error) {
+    console.error('Get latest photos error:', error);
+    return { success: false, photos: [] };
+  }
+}

@@ -50,6 +50,10 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
     - **Düğün (Wedding):** Serif fontlar, altın detaylar ve zarif animasyonlar.
     - **Kurumsal (Corporate):** Profesyonel ızgara düzeni, timeline görünümü.
     - **Parti (Party):** Neon renkler, konfeti animasyonları ve hareketli arka planlar.
+- [x] **Canlı Vitrin (Live Wall):**
+    - Etkinlik mekanında yansıtmak için otomatik akan slayt gösterisi.
+    - Anlık fotoğraf güncelleme ve "YENİ" etiketi.
+    - QR kod entegrasyonu ile hızlı yükleme.
 - [x] **Kapak Görseli:** Etkinlikler için özel kapak görseli yükleme ve gösterme.
 - [x] **QR Kod Özelleştirme:** Renk ve margin ayarları, anlık önizleme ve indirme.
 
