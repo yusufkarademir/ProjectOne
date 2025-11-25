@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Calendar, ImageIcon, QrCode, Edit, Trash2, Copy, Download } from 'lucide-react';
 import { deleteEvent, duplicateEvent } from '../../lib/event-actions';
@@ -63,6 +63,11 @@ export default function EventCard({ event }: { event: Event }) {
   const router = useRouter();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [origin, setOrigin] = useState('');
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -127,8 +132,9 @@ export default function EventCard({ event }: { event: Event }) {
           <div className="mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
             <p className="text-xs text-gray-500 mb-1 font-medium">Paylaşılabilir Yükleme Linki:</p>
             <div className="flex items-center gap-2">
+
               <code className="flex-1 text-xs text-gray-700 truncate">
-                {typeof window !== 'undefined' ? `${window.location.origin}/e/${event.slug}` : `/e/${event.slug}`}
+                {origin ? `${origin}/e/${event.slug}` : `/e/${event.slug}`}
               </code>
               <button
                 onClick={handleCopyLink}
@@ -169,11 +175,11 @@ export default function EventCard({ event }: { event: Event }) {
           {/* Actions */}
           <div className="flex items-center gap-2">
             <Link
-              href={`/events/${event.id}/edit`}
+              href={`/events/${event.id}`}
               className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm font-medium border border-gray-200"
             >
               <Edit size={16} />
-              Düzenle
+              Yönet
             </Link>
             <button
               onClick={handleDuplicate}

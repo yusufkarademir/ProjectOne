@@ -37,6 +37,21 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 ### 4. Altyapı ve Backend
 - [x] **Server Actions:** Güvenli veri işlemleri (deleteEvent, duplicateEvent, uploadPhotos).
 - [x] **Veritabanı:** Prisma şeması güncellemeleri (Video tipi desteği, UploadConfig).
+### 5. Etkinlik Yönetimi ve Özelleştirme (YENİ)
+- [x] **Gelişmiş Yönetim Paneli:** Sekmeli yapı ile tüm ayarların tek yerden yönetimi.
+- [x] **Detaylı Etkinlik Bilgileri:**
+    - Başlangıç/Bitiş tarihleri.
+    - Konum bilgisi.
+    - Karşılama metni ve açıklama.
+- [x] **Etkinlik Programı (Schedule):** Saat, başlık ve açıklama içeren akış planlayıcı.
+- [x] **Duyuru Sistemi:** Misafirlere özel duyurular ekleme.
+- [x] **Gelişmiş Şablon Sistemi (YENİ):**
+    - **Modern (Varsayılan):** Glassmorphism etkili, sade ve şık tasarım.
+    - **Düğün (Wedding):** Serif fontlar, altın detaylar ve zarif animasyonlar.
+    - **Kurumsal (Corporate):** Profesyonel ızgara düzeni, timeline görünümü.
+    - **Parti (Party):** Neon renkler, konfeti animasyonları ve hareketli arka planlar.
+- [x] **Kapak Görseli:** Etkinlikler için özel kapak görseli yükleme ve gösterme.
+- [x] **QR Kod Özelleştirme:** Renk ve margin ayarları, anlık önizleme ve indirme.
 
 ## 🚧 Devam Eden / İyileştirilmesi Gerekenler
 - [ ] **Mobil Uyumluluk Testleri:** Farklı cihazlarda detaylı testler.
@@ -45,8 +60,9 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 ## 📝 Yapılacaklar (Roadmap)
 
 ### Kısa Vadeli
-- [ ] **QR Kod Özelleştirme:** Renk, logo ve stil seçenekleri.
-- [ ] **Etkinlik Temaları:** Misafir sayfaları için farklı renk/tema seçenekleri.
+- [x] **QR Kod Özelleştirme:** Tamamlandı.
+- [x] **Etkinlik Temaları:** Tamamlandı.
+- [ ] **Şifreli Galeri:** İsteğe bağlı şifre korumalı etkinlikler.
 - [ ] **Şifreli Galeri:** İsteğe bağlı şifre korumalı etkinlikler.
 
 ### Uzun Vadeli

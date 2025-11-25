@@ -21,6 +21,12 @@ model Event {
   slug        String   @unique
   name        String
   date        DateTime
+  endDate     DateTime?
+  description String?
+  location    String?
+  coverImage  String?
+  schedule    Json?    // Array of { time: string, title: string, description: string }
+  announcements Json?  // Array of { id: string, title: string, content: string, date: string }
   themeConfig Json?    // Stores theme settings like colors, fonts
   uploadConfig Json?   // Stores upload settings: maxFileSize, allowedTypes, maxFilesPerUpload
   qrCodeUrl   String?

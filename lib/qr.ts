@@ -1,13 +1,23 @@
 import QRCode from 'qrcode';
 
-export async function generateQRCode(text: string): Promise<string> {
+export interface QRCodeOptions {
+  color?: {
+    dark?: string;
+    light?: string;
+  };
+  width?: number;
+  margin?: number;
+}
+
+export async function generateQRCode(text: string, options: QRCodeOptions = {}): Promise<string> {
   try {
+    const { color, width = 400, margin = 2 } = options;
     return await QRCode.toDataURL(text, {
-      width: 400,
-      margin: 2,
+      width,
+      margin,
       color: {
-        dark: '#000000',
-        light: '#ffffff',
+        dark: color?.dark || '#000000',
+        light: color?.light || '#ffffff',
       },
     });
   } catch (err) {
