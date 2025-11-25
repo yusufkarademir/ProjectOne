@@ -29,6 +29,7 @@ model Event {
   announcements Json?  // Array of { id: string, title: string, content: string, date: string }
   themeConfig Json?    // Stores theme settings like colors, fonts
   uploadConfig Json?   // Stores upload settings: maxFileSize, allowedTypes, maxFilesPerUpload
+  privacyConfig Json?  // Stores privacy settings: isGalleryPublic, allowDownload, requireModeration
   qrCodeUrl   String?
   organizerId String
   organizer   User     @relation(fields: [organizerId], references: [id])

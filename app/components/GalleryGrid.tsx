@@ -7,12 +7,13 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { deletePhotos } from '../lib/gallery-actions';
 import toast from 'react-hot-toast';
+import FramedImage from './FramedImage';
 
 interface Photo {
   id: string;
   url: string;
   type?: string;
-  mimeType?: string;
+  mimeType?: string | null;
   createdAt?: Date | string;
 }
 
@@ -20,9 +21,11 @@ interface GalleryGridProps {
     photos: Photo[];
     eventSlug: string;
     canDelete?: boolean;
+    frameStyle?: 'none' | 'polaroid' | 'gradient' | 'minimal' | 'corners' | 'cinema' | 'vintage' | 'gold' | 'neon' | 'floral';
+    allowDownload?: boolean;
 }
 
-export default function GalleryGrid({ photos, eventSlug, canDelete = true }: GalleryGridProps) {
+export default function GalleryGrid({ photos, eventSlug, canDelete = true, frameStyle = 'none', allowDownload = true }: GalleryGridProps) {
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -157,15 +160,17 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true }: Gal
                     </button>
                     <div className="h-5 w-px bg-blue-200 mx-1"></div>
                     
-                    <button 
-                        onClick={handleBulkDownload} 
-                        disabled={isDownloading}
-                        className="flex items-center gap-2 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
-                        title="Seçilenleri İndir"
-                    >
-                        {isDownloading ? <div className="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"/> : <Download size={18} />}
-                        <span className="hidden sm:inline font-medium">İndir</span>
-                    </button>
+                    {allowDownload && (
+                        <button 
+                            onClick={handleBulkDownload} 
+                            disabled={isDownloading}
+                            className="flex items-center gap-2 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                            title="Seçilenleri İndir"
+                        >
+                            {isDownloading ? <div className="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"/> : <Download size={18} />}
+                            <span className="hidden sm:inline font-medium">İndir</span>
+                        </button>
+                    )}
 
                     {canDelete && (
                         <button 
@@ -215,6 +220,7 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true }: Gal
                 key={photo.id} 
                 className={`group relative aspect-[4/5] bg-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer ${selectedIds.has(photo.id) ? 'ring-4 ring-blue-500 ring-offset-2' : ''}`}
                 onClick={() => openLightbox(index)}
+                onContextMenu={(e) => { if (!allowDownload) e.preventDefault(); }}
             >
                 {photo.type === 'video' ? (
                     <video 
@@ -224,11 +230,12 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true }: Gal
                         playsInline
                     />
                 ) : (
-                    <img 
+                    <FramedImage 
                         src={photo.url} 
                         alt="Event photo" 
-                        className={`w-full h-full object-cover transition-transform duration-700 ${selectedIds.has(photo.id) ? 'scale-105' : 'group-hover:scale-110'}`}
-                        loading="lazy"
+                        frameStyle={frameStyle}
+                        className={`w-full h-full transition-transform duration-700 ${selectedIds.has(photo.id) ? 'scale-105' : 'group-hover:scale-110'}`}
+                        imageClassName="w-full h-full object-cover"
                     />
                 )}
                 <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 ${selectedIds.has(photo.id) ? 'opacity-100' : 'group-hover:opacity-100'}`} />
@@ -245,13 +252,15 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true }: Gal
 
                 {/* Quick Actions Overlay */}
                  <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
-                    <button 
-                        onClick={(e) => handleDownload(photo, e)}
-                        className="p-2 bg-white/90 backdrop-blur-sm text-gray-700 rounded-full hover:bg-white hover:text-blue-600 shadow-lg transition-all"
-                        title="İndir"
-                    >
-                        <Download size={16} />
-                    </button>
+                    {allowDownload && (
+                        <button 
+                            onClick={(e) => handleDownload(photo, e)}
+                            className="p-2 bg-white/90 backdrop-blur-sm text-gray-700 rounded-full hover:bg-white hover:text-blue-600 shadow-lg transition-all"
+                            title="İndir"
+                        >
+                            <Download size={16} />
+                        </button>
+                    )}
                 </div>
             </div>
             ))}
@@ -266,6 +275,7 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true }: Gal
                     key={photo.id} 
                     className={`flex items-center gap-6 p-4 border-b border-gray-50 last:border-0 hover:bg-blue-50/30 transition-colors cursor-pointer group ${selectedIds.has(photo.id) ? 'bg-blue-50/80' : ''}`}
                     onClick={() => openLightbox(index)}
+                    onContextMenu={(e) => { if (!allowDownload) e.preventDefault(); }}
                   >
                       <div onClick={(e) => toggleSelection(photo.id, e)} className="cursor-pointer pl-2">
                         <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${selectedIds.has(photo.id) ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-300 group-hover:border-blue-400'}`}>
@@ -273,20 +283,22 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true }: Gal
                         </div>
                       </div>
                       <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm border border-gray-100">
-                          <img src={photo.url} className="w-full h-full object-cover" alt="" />
+                          <FramedImage src={photo.url} alt="" frameStyle={frameStyle} className="w-full h-full" imageClassName="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                           <p className="text-base font-semibold text-gray-900 truncate">Fotoğraf {index + 1}</p>
                           <p className="text-sm text-gray-500 mt-1">{photo.createdAt ? new Date(photo.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Tarih yok'}</p>
                       </div>
                       <div className="flex items-center gap-2 pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
-                            onClick={(e) => handleDownload(photo, e)}
-                            className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
-                            title="İndir"
-                        >
-                            <Download size={20} />
-                        </button>
+                        {allowDownload && (
+                            <button 
+                                onClick={(e) => handleDownload(photo, e)}
+                                className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                                title="İndir"
+                            >
+                                <Download size={20} />
+                            </button>
+                        )}
                         {canDelete && (
                             <button 
                                 onClick={(e) => {
@@ -331,23 +343,33 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true }: Gal
                     controls
                     className="max-h-[85vh] max-w-full object-contain shadow-2xl rounded-lg"
                     onClick={(e) => e.stopPropagation()}
+                    onContextMenu={(e) => { if (!allowDownload) e.preventDefault(); }}
                  />
              ) : (
-                 <img 
-                    src={photos[selectedIndex].url} 
-                    alt="Full size" 
-                    className="max-h-[85vh] max-w-full object-contain shadow-2xl rounded-lg"
-                    onClick={(e) => e.stopPropagation()}
-                 />
+                 <div 
+                    onClick={(e) => e.stopPropagation()} 
+                    className="max-h-[85vh] max-w-full flex items-center justify-center"
+                    onContextMenu={(e) => { if (!allowDownload) e.preventDefault(); }}
+                 >
+                    <FramedImage 
+                        src={photos[selectedIndex].url} 
+                        alt="Full size" 
+                        frameStyle={frameStyle}
+                        className="max-h-[85vh] w-auto shadow-2xl"
+                        imageClassName="max-h-[85vh] w-auto object-contain rounded-lg"
+                    />
+                 </div>
              )}
              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4" onClick={(e) => e.stopPropagation()}>
-                <button 
-                    onClick={(e) => handleDownload(photos[selectedIndex], e)}
-                    className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full font-medium hover:bg-white/20 transition-all hover:scale-105 active:scale-95"
-                >
-                    <Download size={20} />
-                    <span>İndir</span>
-                </button>
+                {allowDownload && (
+                    <button 
+                        onClick={(e) => handleDownload(photos[selectedIndex], e)}
+                        className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full font-medium hover:bg-white/20 transition-all hover:scale-105 active:scale-95"
+                    >
+                        <Download size={20} />
+                        <span>İndir</span>
+                    </button>
+                )}
                 <button 
                     className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full font-medium hover:bg-white/20 transition-all hover:scale-105 active:scale-95"
                     onClick={() => {

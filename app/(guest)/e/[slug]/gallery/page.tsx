@@ -25,8 +25,14 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
 
   if (!event) notFound();
 
-  const theme = (event.themeConfig as any)?.theme || 'default';
-  const font = (event.themeConfig as any)?.font || 'inter';
+  const themeConfig = (event.themeConfig as any) || {};
+  const privacyConfig = (event.privacyConfig as any) || {};
+  const theme = themeConfig.theme || 'default';
+  const font = themeConfig.font || 'inter';
+  const frameStyle = themeConfig.frame || 'none';
+  
+  const isGalleryPublic = privacyConfig.isGalleryPublic !== false; // Default true
+  const allowDownload = privacyConfig.allowDownload !== false;     // Default true
 
   // Theme styles mapping
   const getThemeStyles = () => {
@@ -80,6 +86,38 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
 
   const styles = getThemeStyles();
 
+  if (!isGalleryPublic) {
+    return (
+      <div className={`min-h-screen p-4 font-${font} ${styles.bg} flex items-center justify-center`}>
+        <div className={`max-w-md w-full text-center p-8 rounded-2xl border ${styles.emptyState}`}>
+          <div className="w-20 h-20 bg-gray-100/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Home className={styles.textMuted} size={40} />
+          </div>
+          <h1 className={`text-2xl font-bold mb-3 ${styles.text}`}>Galeri Erişime Kapalı</h1>
+          <p className={`mb-8 ${styles.textMuted}`}>
+            Bu etkinliğin galerisi misafir erişimine kapatılmıştır. Sadece fotoğraf yükleyebilirsiniz.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link 
+              href={`/e/${event.slug}/upload`}
+              className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${styles.buttonPrimary}`}
+            >
+              <Upload size={20} />
+              Fotoğraf Yükle
+            </Link>
+            <Link 
+              href={`/e/${event.slug}`}
+              className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${styles.buttonSecondary}`}
+            >
+              <ArrowLeft size={20} />
+              Ana Sayfaya Dön
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen p-4 font-${font} ${styles.bg} transition-colors duration-300`}>
       <div className="max-w-6xl mx-auto">
@@ -132,7 +170,13 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
             </Link>
           </div>
         ) : (
-          <GalleryGrid photos={event.photos} eventSlug={event.slug} canDelete={false} />
+          <GalleryGrid 
+            photos={event.photos} 
+            eventSlug={event.slug} 
+            canDelete={false} 
+            frameStyle={frameStyle}
+            allowDownload={allowDownload}
+          />
         )}
       </div>
     </div>

@@ -98,6 +98,58 @@ export default function ThemeSettings({ event }: { event: any }) {
         </div>
       </div>
 
+      {/* Frame Selection */}
+      <div>
+        <h3 className="text-lg font-medium mb-4">Fotoğraf Çerçevesi</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            {[
+                { id: 'none', name: 'Yok', color: '#e5e7eb' },
+                { id: 'polaroid', name: 'Polaroid', color: '#ffffff' },
+                { id: 'gradient', name: 'Renkli', color: '#ec4899' },
+                { id: 'minimal', name: 'Minimal', color: '#f3f4f6' },
+                { id: 'corners', name: 'Köşe', color: '#eab308' },
+                { id: 'cinema', name: 'Film Şeridi', color: '#000000' },
+                { id: 'vintage', name: 'Vintage', color: '#d4c49c' },
+                { id: 'gold', name: 'Altın', color: '#bf953f' },
+                { id: 'neon', name: 'Neon', color: '#00ffff' },
+                { id: 'floral', name: 'Çiçekli', color: '#f9a8d4' },
+            ].map((frame) => (
+                <button
+                    key={frame.id}
+                    onClick={() => setThemeConfig({ ...themeConfig, frame: frame.id })}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+                        (themeConfig.frame || 'none') === frame.id 
+                            ? 'border-blue-600 bg-blue-50' 
+                            : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                >
+                    <div 
+                        className="w-full aspect-square rounded-lg shadow-sm border flex items-center justify-center overflow-hidden relative"
+                        style={{ backgroundColor: '#f9fafb' }}
+                    >
+                        {/* Preview Logic */}
+                        {frame.id === 'none' && <div className="w-8 h-8 bg-gray-300 rounded"></div>}
+                        {frame.id === 'polaroid' && <div className="w-8 h-10 bg-white shadow border border-gray-100 pb-2 flex items-start justify-center"><div className="w-6 h-6 bg-gray-200 mt-1"></div></div>}
+                        {frame.id === 'gradient' && <div className="w-8 h-8 rounded bg-gradient-to-tr from-pink-500 to-yellow-500 p-0.5"><div className="w-full h-full bg-white rounded-sm"></div></div>}
+                        {frame.id === 'minimal' && <div className="w-8 h-8 bg-white border-4 border-gray-100 shadow-sm"><div className="w-full h-full bg-gray-200"></div></div>}
+                        {frame.id === 'corners' && (
+                            <div className="relative w-8 h-8 bg-gray-100">
+                                <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-yellow-500"></div>
+                                <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-yellow-500"></div>
+                            </div>
+                        )}
+                        {frame.id === 'cinema' && <div className="w-10 h-8 bg-black flex flex-col justify-between p-0.5"><div className="flex gap-0.5"><div className="w-1 h-1 bg-white/50"></div><div className="w-1 h-1 bg-white/50"></div></div><div className="h-4 bg-gray-800 border border-white/20"></div><div className="flex gap-0.5"><div className="w-1 h-1 bg-white/50"></div><div className="w-1 h-1 bg-white/50"></div></div></div>}
+                        {frame.id === 'vintage' && <div className="w-8 h-8 bg-[#f4e4bc] border border-[#d4c49c] p-1 rotate-3"><div className="w-full h-full bg-gray-400 sepia"></div></div>}
+                        {frame.id === 'gold' && <div className="w-8 h-8 bg-gradient-to-br from-[#bf953f] to-[#fcf6ba] p-1"><div className="w-full h-full bg-black p-0.5"><div className="w-full h-full border border-[#bf953f]"></div></div></div>}
+                        {frame.id === 'neon' && <div className="w-8 h-8 bg-black border border-[#0ff] shadow-[0_0_5px_#0ff] rounded p-1"><div className="w-full h-full bg-gray-800"></div></div>}
+                        {frame.id === 'floral' && <div className="w-8 h-8 bg-white rounded-full border-2 border-pink-200 relative"><div className="absolute -top-1 -left-1 w-3 h-3 bg-pink-300 rounded-full opacity-50"></div></div>}
+                    </div>
+                    <span className="text-xs font-medium text-center truncate w-full">{frame.name}</span>
+                </button>
+            ))}
+        </div>
+      </div>
+
       {/* Cover Image */}
       <div>
         <h3 className="text-lg font-medium mb-4">Kapak Görseli</h3>

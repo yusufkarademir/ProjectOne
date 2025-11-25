@@ -3,6 +3,7 @@ import { prisma } from '../../../../../lib/db';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import GalleryGrid from '../../../../components/GalleryGrid';
+import ModerationGallery from '../../../../components/ModerationGallery';
 import { Home, ChevronRight, ArrowLeft } from 'lucide-react';
 
 export default async function OrganizerGalleryPage({ params }: { params: Promise<{ id: string }> }) {
@@ -26,6 +27,12 @@ export default async function OrganizerGalleryPage({ params }: { params: Promise
   const user = await prisma.user.findUnique({ where: { email: session.user.email } });
   if (event.organizerId !== user?.id) return <div>Unauthorized</div>;
 
+  const pendingPhotos = event.photos.filter(p => p.status === 'pending');
+  const approvedPhotos = event.photos.filter(p => p.status === 'approved');
+
+  const privacyConfig = (event.privacyConfig as any) || {};
+  const requireModeration = privacyConfig.requireModeration === true;
+
   return (
     <div>
       {/* Breadcrumb */}
@@ -43,7 +50,7 @@ export default async function OrganizerGalleryPage({ params }: { params: Promise
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
            <h1 className="text-3xl font-bold text-gray-900">{event.name}</h1>
-           <p className="text-gray-500 mt-1">Galeri Yönetimi - {event.photos.length} içerik</p>
+           <p className="text-gray-500 mt-1">Galeri Yönetimi - {approvedPhotos.length} içerik</p>
         </div>
         <Link 
           href="/dashboard" 
@@ -54,13 +61,32 @@ export default async function OrganizerGalleryPage({ params }: { params: Promise
         </Link>
       </div>
 
-      {event.photos.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-          <p className="text-gray-500">Henüz fotoğraf yüklenmemiş.</p>
+      {/* Moderation Section */}
+      {(requireModeration || pendingPhotos.length > 0) && (
+        <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-2 h-8 bg-orange-500 rounded-full"></div>
+            <h2 className="text-xl font-bold text-gray-900">Moderasyon Bekleyenler</h2>
+          </div>
+          <ModerationGallery photos={pendingPhotos} eventSlug={event.slug} />
         </div>
-      ) : (
-        <GalleryGrid photos={event.photos} eventSlug={event.slug} canDelete={true} />
       )}
+
+      {/* Approved Gallery Section */}
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+            <div className="w-2 h-8 bg-blue-500 rounded-full"></div>
+            <h2 className="text-xl font-bold text-gray-900">Yayınlanan Galeri</h2>
+        </div>
+        
+        {approvedPhotos.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            <p className="text-gray-500">Henüz onaylanmış fotoğraf yok.</p>
+            </div>
+        ) : (
+            <GalleryGrid photos={approvedPhotos} eventSlug={event.slug} canDelete={true} />
+        )}
+      </div>
     </div>
   );
 }

@@ -56,6 +56,26 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
     - QR kod entegrasyonu ile hızlı yükleme.
 - [x] **Kapak Görseli:** Etkinlikler için özel kapak görseli yükleme ve gösterme.
 - [x] **QR Kod Özelleştirme:** Renk ve margin ayarları, anlık önizleme ve indirme.
+- [x] **Markalı Çerçeveler (Branded Frames):**
+    - 10 farklı çerçeve seçeneği (Polaroid, Cinema, Gold, Neon vb.).
+    - Canlı Vitrin (Live Wall) ve Galeri entegrasyonu.
+    - Orijinal fotoğrafı koruyarak görsel katman olarak uygulama.
+
+### 6. Güvenlik ve Gizlilik (YENİ)
+- [x] **Gizlilik Ayarları:**
+    - Misafir galerisi erişimini açma/kapama.
+    - İndirme iznini yönetme.
+    - Sağ tık koruması (İndirme kapalıysa).
+- [x] **Moderasyon Sistemi:**
+    - "Moderasyon Modu" ile yüklenen fotoğrafları onaya düşürme.
+    - Dashboard'da "Onay Bekleyenler" paneli.
+    - Otomatik yenileme (Auto-refresh) ile anlık moderasyon.
+    - Toplu onaylama ve reddetme.
+
+### 7. Yükleme Sistemi İyileştirmeleri (YENİ)
+- [x] **Sıralı Yükleme (Sequential Upload):** Büyük dosyaların ve çoklu yüklemelerin sunucuyu yormaması için teker teker yükleme.
+- [x] **Yüksek Limit:** 500MB'a kadar video yükleme desteği.
+- [x] **İlerleme Takibi:** Canlı yükleme durumu ve detaylı hata raporlama.
 
 ## 🚧 Devam Eden / İyileştirilmesi Gerekenler
 - [ ] **Mobil Uyumluluk Testleri:** Farklı cihazlarda detaylı testler.

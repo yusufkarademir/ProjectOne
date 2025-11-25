@@ -6,7 +6,8 @@ import ScheduleSettings from './event-settings/ScheduleSettings';
 import AnnouncementSettings from './event-settings/AnnouncementSettings';
 import ThemeSettings from './event-settings/ThemeSettings';
 import QRCustomizer from './QRCustomizer';
-import { Calendar, Layout, Megaphone, Palette, QrCode, Image as ImageIcon, Tv } from 'lucide-react';
+import PrivacySettings from './event-settings/PrivacySettings';
+import { Calendar, Layout, Megaphone, Palette, QrCode, Image as ImageIcon, Tv, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 const TABS = [
@@ -15,6 +16,7 @@ const TABS = [
   { id: 'announcements', label: 'Duyurular', icon: Megaphone },
   { id: 'theme', label: 'Görünüm & Tema', icon: Palette },
   { id: 'qr', label: 'QR Kod', icon: QrCode },
+  { id: 'privacy', label: 'Güvenlik & Gizlilik', icon: Shield },
 ];
 
 export default function EventManager({ event }: { event: any }) {
@@ -82,6 +84,7 @@ export default function EventManager({ event }: { event: any }) {
                 {activeTab === 'announcements' && 'Misafirlerinize iletmek istediğiniz duyuruları buradan ekleyebilirsiniz.'}
                 {activeTab === 'theme' && 'Karşılama sayfasının (Vitrin) görünümünü buradan özelleştirebilirsiniz.'}
                 {activeTab === 'qr' && 'Etkinliğinize özel QR kodunu buradan tasarlayabilir ve indirebilirsiniz.'}
+                {activeTab === 'privacy' && 'Etkinliğinizin gizlilik ve güvenlik ayarlarını buradan yönetebilirsiniz.'}
             </p>
           </div>
 
@@ -99,6 +102,7 @@ export default function EventManager({ event }: { event: any }) {
                     />
                 </div>
             )}
+            {activeTab === 'privacy' && <PrivacySettings event={event} />}
           </div>
         </div>
       </div>

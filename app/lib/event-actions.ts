@@ -237,3 +237,35 @@ export async function getLatestPhotos(slug: string, after?: string) {
     return { success: false, photos: [] };
   }
 }
+
+export async function updateEventPrivacySettings(eventId: string, privacyConfig: any) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return { success: false, message: 'Oturum açmanız gerekiyor.' };
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+    if (!user) {
+      return { success: false, message: 'Kullanıcı bulunamadı.' };
+    }
+
+    const event = await prisma.event.findUnique({ where: { id: eventId } });
+    if (!event || event.organizerId !== user.id) {
+      return { success: false, message: 'Bu etkinliği düzenleme yetkiniz yok.' };
+    }
+
+    await prisma.event.update({
+      where: { id: eventId },
+      data: {
+        privacyConfig: privacyConfig,
+      },
+    });
+
+    revalidatePath(`/events/${eventId}`);
+    return { success: true, message: 'Gizlilik ayarları güncellendi.' };
+  } catch (error) {
+    console.error('Update privacy settings error:', error);
+    return { success: false, message: `Güncelleme hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}` };
+  }
+}

@@ -46,3 +46,51 @@ export async function deletePhotos(photoIds: string[], eventSlug: string) {
     return { success: false, message: 'Fotoğraflar silinirken bir hata oluştu.' };
   }
 }
+
+export async function approvePhotos(photoIds: string[], eventSlug: string) {
+  try {
+    await prisma.photo.updateMany({
+      where: {
+        id: { in: photoIds },
+      },
+      data: {
+        status: 'approved',
+      },
+    });
+
+    revalidatePath(`/e/${eventSlug}/gallery`);
+    revalidatePath(`/dashboard`); // Revalidate dashboard to update counts if any
+    
+    return { success: true, message: `${photoIds.length} fotoğraf onaylandı.` };
+  } catch (error) {
+    console.error('Approve error:', error);
+    return { success: false, message: 'Fotoğraflar onaylanırken bir hata oluştu.' };
+  }
+}
+
+import { unstable_noStore as noStore } from 'next/cache';
+
+export async function getPendingPhotos(eventSlug: string) {
+  noStore();
+  try {
+    const event = await prisma.event.findUnique({
+      where: { slug: eventSlug },
+      select: {
+        photos: {
+          where: { status: 'pending' },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            url: true,
+            type: true,
+          }
+        }
+      }
+    });
+
+    return { success: true, photos: event?.photos || [] };
+  } catch (error) {
+    console.error('Get pending photos error:', error);
+    return { success: false, photos: [] };
+  }
+}

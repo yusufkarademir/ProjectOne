@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getLatestPhotos } from '@/app/lib/event-actions';
 import { QRCodeSVG } from 'qrcode.react';
+import FramedImage from '@/app/components/FramedImage';
 
 interface LiveSlideshowProps {
   initialPhotos: any[];
@@ -11,9 +12,10 @@ interface LiveSlideshowProps {
   eventName: string;
   qrCodeUrl: string;
   theme: string;
+  frameStyle?: 'none' | 'polaroid' | 'gradient' | 'minimal' | 'corners' | 'cinema' | 'vintage' | 'gold' | 'neon' | 'floral';
 }
 
-export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUrl, theme }: LiveSlideshowProps) {
+export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUrl, theme, frameStyle = 'none' }: LiveSlideshowProps) {
   const [photos, setPhotos] = useState<any[]>(initialPhotos);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastFetch, setLastFetch] = useState(new Date().toISOString());
@@ -111,20 +113,22 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.1 }}
                     transition={{ duration: 0.8 }}
-                    className="relative max-h-full max-w-full shadow-2xl rounded-lg overflow-hidden"
+                    className="relative max-h-full max-w-full"
                 >
-                    <img 
+                    <FramedImage 
                         src={currentPhoto.url} 
                         alt="Live slide" 
-                        className="max-h-[80vh] w-auto object-contain rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.3)]"
+                        frameStyle={frameStyle}
+                        className="max-h-[80vh] w-auto shadow-[0_0_50px_rgba(0,0,0,0.3)]"
+                        imageClassName="max-h-[80vh] w-auto object-contain rounded-lg"
                     />
                     
-                    {/* "New" Badge if photo is very recent (e.g., last 1 minute) */}
+                    {/* "New" Badge */}
                     {new Date(currentPhoto.createdAt).getTime() > Date.now() - 60000 && (
                         <motion.div 
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg animate-pulse"
+                            className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg animate-pulse z-20"
                         >
                             YENİ!
                         </motion.div>

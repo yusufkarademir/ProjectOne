@@ -28,6 +28,7 @@ export default async function LivePage({ params }: { params: Promise<{ slug: str
 
   const themeConfig = (event.themeConfig as any) || {};
   const theme = themeConfig.theme || 'modern';
+  const frameStyle = themeConfig.frame || 'none';
 
   return (
     <LiveSlideshow 
@@ -36,6 +37,7 @@ export default async function LivePage({ params }: { params: Promise<{ slug: str
         eventName={event.name}
         qrCodeUrl={event.qrCodeUrl || ''}
         theme={theme}
+        frameStyle={frameStyle}
     />
   );
 }
