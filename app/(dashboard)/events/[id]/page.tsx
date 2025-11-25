@@ -85,9 +85,11 @@ export default async function EventPage({ params }: { params: { id: string } }) 
             {event.photos.slice(0, 4).map((photo) => (
               <div key={photo.id} className="aspect-square bg-gray-200 rounded overflow-hidden relative">
                  {/* We will implement image rendering later */}
-                 <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                    Fotoğraf
-                 </div>
+                 <img 
+                  src={photo.url} 
+                  alt="Recent upload" 
+                  className="w-full h-full object-cover"
+                />
               </div>
             ))}
           </div>

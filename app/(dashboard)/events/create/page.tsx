@@ -3,6 +3,7 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { createEvent } from '../../../lib/actions';
+import { useSearchParams } from 'next/navigation';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -15,6 +16,8 @@ function SubmitButton() {
 
 export default function CreateEventPage() {
   const [state, dispatch] = useActionState(createEvent, null);
+  const searchParams = useSearchParams();
+  const selectedTemplate = searchParams.get('template');
 
   return (
     <div className="max-w-2xl mx-auto bg-white p-8 rounded shadow">
@@ -40,10 +43,15 @@ export default function CreateEventPage() {
         </div>
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700">Tema</label>
-          <select name="theme" className="mt-1 block w-full border border-gray-300 rounded p-2">
-            <option value="wedding">Düğün Teması</option>
-            <option value="corporate">Kurumsal Tema</option>
-            <option value="birthday">Doğum Günü Teması</option>
+          <select 
+            name="theme" 
+            className="mt-1 block w-full border border-gray-300 rounded p-2"
+            defaultValue={selectedTemplate || 'modern'}
+          >
+            <option value="modern">Modern Tema</option>
+            <option value="dark">Gece Modu</option>
+            <option value="classic">Klasik Tema</option>
+            <option value="vibrant">Canlı Tema</option>
           </select>
         </div>
 

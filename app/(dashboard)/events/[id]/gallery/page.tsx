@@ -2,14 +2,17 @@ import { auth } from '../../../../../auth';
 import { prisma } from '../../../../../lib/db';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { revalidatePath } from 'next/cache';
+import GalleryGrid from '../../../../components/GalleryGrid';
+import { Home, ChevronRight, ArrowLeft } from 'lucide-react';
 
-export default async function OrganizerGalleryPage({ params }: { params: { id: string } }) {
+export default async function OrganizerGalleryPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user?.email) return null;
 
+  const { id } = await params;
+
   const event = await prisma.event.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       photos: {
         orderBy: { createdAt: 'desc' },
@@ -23,86 +26,41 @@ export default async function OrganizerGalleryPage({ params }: { params: { id: s
   const user = await prisma.user.findUnique({ where: { email: session.user.email } });
   if (event.organizerId !== user?.id) return <div>Unauthorized</div>;
 
-  async function deletePhoto(formData: FormData) {
-    'use server';
-    const photoId = formData.get('photoId') as string;
-    if (!photoId) return;
-
-    // In a real app, we should also delete from R2 here.
-    // For now, just deleting from DB.
-    await prisma.photo.delete({ where: { id: photoId } });
-    revalidatePath(`/events/${params.id}/gallery`);
-  }
-
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      {/* Breadcrumb */}
+      <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
+        <Link href="/dashboard" className="hover:text-gray-900 flex items-center gap-1">
+          <Home size={16} />
+          <span>Dashboard</span>
+        </Link>
+        <ChevronRight size={14} />
+        <span className="text-gray-700">{event.name}</span>
+        <ChevronRight size={14} />
+        <span className="text-gray-900 font-medium">Galeri</span>
+      </div>
+
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-           <h1 className="text-3xl font-bold">{event.name}</h1>
-           <p className="text-gray-500">Galeri Yönetimi</p>
+           <h1 className="text-3xl font-bold text-gray-900">{event.name}</h1>
+           <p className="text-gray-500 mt-1">Galeri Yönetimi - {event.photos.length} içerik</p>
         </div>
-        <Link href={`/events/${event.id}`} className="text-gray-600 hover:underline">
-          &larr; Etkinliğe Dön
+        <Link 
+          href="/dashboard" 
+          className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+        >
+          <ArrowLeft size={18} />
+          Dashboard'a Dön
         </Link>
       </div>
 
-      <div className="bg-white p-6 rounded shadow">
-        <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Toplam {event.photos.length} Fotoğraf</h2>
-            <a 
-                href={`/e/${event.slug}/gallery`} 
-                target="_blank" 
-                className="text-blue-600 hover:underline text-sm"
-            >
-                Misafir Görünümü &rarr;
-            </a>
+      {event.photos.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+          <p className="text-gray-500">Henüz fotoğraf yüklenmemiş.</p>
         </div>
-        
-        {event.photos.length === 0 ? (
-          <p className="text-gray-500 text-center py-10">Henüz fotoğraf yüklenmemiş.</p>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {event.photos.map((photo) => (
-              <div key={photo.id} className="relative group aspect-square bg-gray-200 rounded overflow-hidden">
-                <img 
-                  src={photo.url} 
-                  alt="Event photo" 
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="flex space-x-2">
-                        <a 
-                            href={photo.url} 
-                            download 
-                            target="_blank"
-                            className="bg-white text-gray-800 p-2 rounded hover:bg-gray-100"
-                            title="İndir"
-                        >
-                            ⬇
-                        </a>
-                        <form action={deletePhoto}>
-                            <input type="hidden" name="photoId" value={photo.id} />
-                            <button 
-                                type="submit"
-                                className="bg-red-600 text-white p-2 rounded hover:bg-red-700"
-                                title="Sil"
-                                onClick={(e) => {
-                                    if (!confirm('Bu fotoğrafı silmek istediğinize emin misiniz?')) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                            >
-                                🗑
-                            </button>
-                        </form>
-                    </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      ) : (
+        <GalleryGrid photos={event.photos} eventSlug={event.slug} canDelete={true} />
+      )}
     </div>
   );
 }
