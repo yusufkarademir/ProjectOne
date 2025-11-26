@@ -2,8 +2,21 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, PlusCircle, LogOut, Settings, Image as ImageIcon } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, LogOut, Settings, Image as ImageIcon, ChevronRight, Calendar, User as UserIcon } from 'lucide-react';
 import { signOut } from 'next-auth/react';
+
+interface SidebarProps {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+  recentEvents?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+  }>;
+}
 
 const menuItems = [
   {
@@ -23,46 +36,96 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ user, recentEvents = [] }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-slate-900 text-white flex flex-col h-screen fixed left-0 top-0 z-50">
-      <div className="p-6 border-b border-slate-800">
-        <h1 className="text-2xl font-bold tracking-wider">EtkinlikQR</h1>
+    <aside className="w-72 bg-slate-900 text-white flex flex-col h-screen fixed left-0 top-0 z-50 shadow-xl">
+      {/* Brand */}
+      <div className="p-6 border-b border-slate-800 flex items-center gap-3">
+        <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <span className="font-bold text-lg">E</span>
+        </div>
+        <h1 className="text-xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+            EtkinlikQR
+        </h1>
+      </div>
+
+      {/* User Profile - Compact */}
+      <div className="px-4 py-6 bg-slate-800/30">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-sm font-bold shadow-inner border border-white/10">
+                {user?.name?.[0]?.toUpperCase() || <UserIcon size={16} />}
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">{user?.name || 'Kullanıcı'}</p>
+                <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+            </div>
+        </div>
       </div>
       
-      <nav className="flex-1 py-6 px-3 space-y-2">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive 
-                  ? 'bg-blue-600 text-white shadow-lg' 
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <item.icon size={20} />
-              <span className="font-medium">{item.title}</span>
-            </Link>
-          );
-        })}
-        
-        {/* Placeholder for future links */}
-        <div className="pt-4 mt-4 border-t border-slate-800">
-             {/* Add more items if needed */}
+      <nav className="flex-1 px-4 space-y-6 overflow-y-auto py-4 custom-scrollbar">
+        {/* Main Menu */}
+        <div className="space-y-1">
+            <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Menü</p>
+            {menuItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+                <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    isActive 
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' 
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                }`}
+                >
+                <item.icon size={20} className={isActive ? 'text-white' : 'text-slate-500 group-hover:text-white transition-colors'} />
+                <span className="font-medium">{item.title}</span>
+                {isActive && <ChevronRight size={16} className="ml-auto opacity-50" />}
+                </Link>
+            );
+            })}
         </div>
+
+        {/* Recent Events */}
+        {recentEvents.length > 0 && (
+            <div className="space-y-1">
+                <div className="flex items-center justify-between px-4 mb-2">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Son Etkinlikler</p>
+                    <Link href="/dashboard" className="text-[10px] text-blue-400 hover:text-blue-300 transition-colors">Tümü</Link>
+                </div>
+                {recentEvents.map((event) => (
+                    <Link
+                        key={event.id}
+                        href={`/events/${event.id}`}
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group ${
+                             pathname.includes(event.id)
+                                ? 'bg-slate-800 text-white border border-slate-700'
+                                : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
+                        }`}
+                    >
+                        <div className={`w-2 h-2 rounded-full ${pathname.includes(event.id) ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-slate-600 group-hover:bg-slate-500'}`} />
+                        <span className="text-sm font-medium truncate">{event.name}</span>
+                    </Link>
+                ))}
+                <Link 
+                    href="/events/create"
+                    className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors mt-2 group"
+                >
+                    <PlusCircle size={14} className="group-hover:scale-110 transition-transform" />
+                    Yeni Etkinlik Oluştur
+                </Link>
+            </div>
+        )}
       </nav>
 
-      <div className="p-4 border-t border-slate-800">
+      <div className="p-4 border-t border-slate-800 bg-slate-900/50 backdrop-blur-sm">
         <button 
             onClick={() => signOut()}
-            className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg transition-colors font-medium"
+            className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-red-900/20 hover:text-red-400 text-slate-400 py-3 rounded-xl transition-all font-medium border border-slate-700 hover:border-red-900/50 group"
         >
-          <LogOut size={18} />
+          <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
           Çıkış Yap
         </button>
       </div>

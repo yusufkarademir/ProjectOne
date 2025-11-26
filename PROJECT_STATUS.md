@@ -7,7 +7,10 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 ## ✅ Tamamlanan Özellikler
 
 ### 1. Dashboard ve Arayüz
-- [x] **Modern Dashboard Tasarımı:** İstatistik kartları, filtreleme ve yeni etkinlik kartı (EventCard) tasarımı.
+- [x] **Modern Dashboard Tasarımı:**
+    - **Sidebar:** Kullanıcı profili, son etkinlikler listesi ve modern tasarım.
+    - **EventCard:** Kapak görseli, durum rozeti, hızlı aksiyon butonları (Sayfa, Galeri, Live) ve "Yönet" butonu.
+    - **Şablonlar:** Görsel ağırlıklı, detaylı ve etkileşimli şablon seçim ekranı.
 - [x] **Etkinlik Kartı Özellikleri:**
     - QR Kod önizleme ve indirme.
     - Hızlı aksiyon butonları (Sayfa, Galeri, Düzenle, Kopyala, Sil).
@@ -117,3 +120,4 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 - [x] *Galeri Silme Butonu:* Organizer görünümünde eksik olan silme butonu eklendi.
 - [x] *Karışık Medya Yükleme:* Fotoğraf ve video karışık yüklendiğinde oluşan sorunlar giderildi.
 - [x] *Prisma Senkronizasyonu:* Veritabanı şeması güncellendi ve istemci yeniden oluşturuldu.
+- [x] *Dashboard Crash:* User tablosunda olmayan 'name' alanı sorgudan çıkarılarak hata giderildi.

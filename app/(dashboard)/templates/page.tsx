@@ -1,69 +1,94 @@
 import Link from 'next/link';
-import { LayoutTemplate, ArrowRight, Check } from 'lucide-react';
+import { LayoutTemplate, ArrowRight, Check, Star } from 'lucide-react';
 
 const templates = [
   {
     id: 'modern',
     name: 'Modern',
     description: 'Şık, temiz ve minimalist bir tasarım. Kurumsal etkinlikler ve düğünler için ideal.',
-    color: 'bg-blue-500',
+    color: 'bg-gradient-to-br from-blue-500 to-cyan-400',
     features: ['Tam ekran kapak fotoğrafı', 'Grid galeri düzeni', 'Yumuşak geçişler'],
-    preview: '/templates/modern-preview.jpg' // Placeholder
+    popular: true
   },
   {
     id: 'dark',
     name: 'Gece Modu',
     description: 'Karanlık temalı, etkileyici ve premium bir görünüm. Partiler ve konserler için harika.',
-    color: 'bg-slate-900',
+    color: 'bg-gradient-to-br from-slate-900 to-slate-800',
     features: ['Koyu arka plan', 'Neon vurgular', 'Büyük yazı tipleri'],
-    preview: '/templates/dark-preview.jpg' // Placeholder
+    popular: false
   },
   {
-    id: 'classic',
-    name: 'Klasik',
-    description: 'Geleneksel ve zarif. Aile toplantıları ve resmi törenler için uygun.',
-    color: 'bg-stone-100',
-    features: ['Serif yazı tipleri', 'Kağıt dokusu arka plan', 'Çerçeveli fotoğraflar'],
-    preview: '/templates/classic-preview.jpg' // Placeholder
+    id: 'wedding',
+    name: 'Düğün & Nişan',
+    description: 'Zarif serif fontlar ve altın detaylarla süslenmiş romantik bir tema.',
+    color: 'bg-gradient-to-br from-[#d4af37] to-[#f3e5ab]',
+    features: ['Altın detaylar', 'Zarif tipografi', 'Romantik animasyonlar'],
+    popular: true
   },
   {
-    id: 'vibrant',
-    name: 'Canlı',
-    description: 'Enerjik ve renkli. Doğum günleri ve festivaller için mükemmel.',
-    color: 'bg-pink-500',
-    features: ['Renkli gradyanlar', 'Yuvarlak butonlar', 'Eğlenceli animasyonlar'],
-    preview: '/templates/vibrant-preview.jpg' // Placeholder
+    id: 'party',
+    name: 'Parti & Eğlence',
+    description: 'Enerjik renkler ve hareketli konfeti efektleriyle dolu eğlenceli bir tema.',
+    color: 'bg-gradient-to-br from-purple-600 to-pink-500',
+    features: ['Canlı renkler', 'Konfeti efektleri', 'Hareketli arka plan'],
+    popular: false
   }
 ];
 
 export default function TemplatesPage() {
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <LayoutTemplate className="text-gray-400" size={32} />
+      <div className="mb-10 text-center max-w-2xl mx-auto">
+        <div className="inline-flex items-center justify-center p-3 bg-blue-50 text-blue-600 rounded-2xl mb-4">
+            <LayoutTemplate size={32} />
+        </div>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Şablon Yöneticisi
         </h1>
-        <p className="text-gray-500 mt-1 ml-11">Etkinlikleriniz için hazır tasarımları keşfedin.</p>
+        <p className="text-lg text-gray-500">
+            Etkinliğinizin ruhunu yansıtacak profesyonel tasarımları keşfedin. Tek tıkla uygulayın ve özelleştirin.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {templates.map((template) => (
-            <div key={template.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition-all duration-300 flex flex-col h-full">
-                {/* Preview Area (Placeholder) */}
-                <div className={`h-48 ${template.color} relative flex items-center justify-center`}>
-                    <span className="text-white/50 text-4xl font-bold tracking-widest uppercase opacity-30">{template.name}</span>
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+            <div key={template.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative">
+                {template.popular && (
+                    <div className="absolute top-4 right-4 z-10 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
+                        <Star size={12} fill="currentColor" />
+                        POPÜLER
+                    </div>
+                )}
+                
+                {/* Preview Area */}
+                <div className={`h-56 ${template.color} relative flex items-center justify-center overflow-hidden`}>
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
+                    <span className="text-white/90 text-3xl font-bold tracking-widest uppercase drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500">
+                        {template.name}
+                    </span>
+                    
+                    {/* Overlay Button */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 backdrop-blur-[2px]">
+                        <Link 
+                            href={`/events/create?template=${template.id}`}
+                            className="bg-white text-gray-900 px-6 py-3 rounded-full font-bold shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2"
+                        >
+                            Seç ve Başla <ArrowRight size={16} />
+                        </Link>
+                    </div>
                 </div>
                 
-                <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{template.name}</h3>
-                    <p className="text-gray-500 text-sm mb-4">{template.description}</p>
+                <div className="p-8 flex-1 flex flex-col">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{template.name}</h3>
+                    <p className="text-gray-500 mb-6 leading-relaxed">{template.description}</p>
                     
-                    <div className="space-y-2 mb-6 flex-1">
+                    <div className="space-y-3 mb-8 flex-1">
                         {template.features.map((feature, idx) => (
-                            <div key={idx} className="flex items-center gap-2 text-sm text-gray-600">
-                                <Check size={14} className="text-green-500" />
+                            <div key={idx} className="flex items-center gap-3 text-sm text-gray-600">
+                                <div className="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
+                                    <Check size={12} strokeWidth={3} />
+                                </div>
                                 <span>{feature}</span>
                             </div>
                         ))}
@@ -71,10 +96,10 @@ export default function TemplatesPage() {
 
                     <Link 
                         href={`/events/create?template=${template.id}`}
-                        className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                        className="w-full flex items-center justify-center gap-2 bg-gray-50 text-gray-900 py-4 rounded-xl hover:bg-gray-900 hover:text-white transition-all duration-300 font-bold group/btn"
                     >
                         <span>Bu Şablonu Kullan</span>
-                        <ArrowRight size={16} />
+                        <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
                     </Link>
                 </div>
             </div>
