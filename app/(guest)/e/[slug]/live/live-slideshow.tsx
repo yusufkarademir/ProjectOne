@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getLatestPhotos } from '@/app/lib/event-actions';
 import { QRCodeSVG } from 'qrcode.react';
+import Marquee from 'react-fast-marquee';
 import FramedImage from '@/app/components/FramedImage';
 
 interface LiveSlideshowProps {
@@ -16,10 +17,9 @@ interface LiveSlideshowProps {
 }
 
 export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUrl, theme, frameStyle = 'none' }: LiveSlideshowProps) {
-  const [photos, setPhotos] = useState<any[]>(initialPhotos);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [allPhotos, setAllPhotos] = useState<any[]>(initialPhotos);
+  const [spotlightPhoto, setSpotlightPhoto] = useState<any | null>(null);
   const [lastFetch, setLastFetch] = useState(new Date().toISOString());
-
   const [origin, setOrigin] = useState('');
 
   useEffect(() => {
@@ -31,29 +31,46 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
     const interval = setInterval(async () => {
       const result = await getLatestPhotos(slug, lastFetch);
       if (result.success && result.photos && result.photos.length > 0) {
-        // Add new photos to the beginning of the array
-        setPhotos(prev => [...result.photos, ...prev]);
+        // We have new photos!
         setLastFetch(new Date().toISOString());
-        // Optional: Jump to the newest photo immediately
-        setCurrentIndex(0);
+        
+        // Show the most recent one in spotlight
+        // If multiple came in, we could queue them, but for now let's show the latest one
+        // and add all of them to the list
+        const newPhotos = result.photos;
+        
+        // Add to main list immediately so they are there when spotlight finishes
+        setAllPhotos(prev => [...newPhotos, ...prev]);
+
+        // Trigger spotlight for the newest one
+        setSpotlightPhoto(newPhotos[0]);
+
+        // Clear spotlight after 5 seconds
+        setTimeout(() => {
+            setSpotlightPhoto(null);
+        }, 5000);
       }
-    }, 10000); // Check every 10 seconds
+    }, 5000); // Check every 5 seconds for faster updates
 
     return () => clearInterval(interval);
   }, [slug, lastFetch]);
 
-  // Slideshow timer
-  useEffect(() => {
-    if (photos.length <= 1) return;
+  // Split photos into rows for the marquee
+  const rows = useMemo(() => {
+    if (allPhotos.length === 0) return [[], [], []];
+    
+    const row1: any[] = [];
+    const row2: any[] = [];
+    const row3: any[] = [];
 
-    const timer = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % photos.length);
-    }, 5000); // Change slide every 5 seconds
+    allPhotos.forEach((photo, index) => {
+        if (index % 3 === 0) row1.push(photo);
+        else if (index % 3 === 1) row2.push(photo);
+        else row3.push(photo);
+    });
 
-    return () => clearInterval(timer);
-  }, [photos.length]);
-
-  const currentPhoto = photos[currentIndex];
+    return [row1, row2, row3];
+  }, [allPhotos]);
 
   // Theme styles
   const getThemeStyles = () => {
@@ -69,7 +86,7 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
   };
   const styles = getThemeStyles();
 
-  if (!currentPhoto) {
+  if (allPhotos.length === 0) {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${styles.bg} ${styles.text}`}>
         <div className="bg-white p-4 rounded-xl shadow-lg mb-8">
@@ -82,84 +99,133 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
   }
 
   return (
-    <div className={`fixed inset-0 overflow-hidden ${styles.bg}`}>
-      {/* Background Blur */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-30 blur-3xl scale-110 transition-all duration-1000"
-        style={{ backgroundImage: `url(${currentPhoto.url})` }}
-      />
-
-      {/* Main Content */}
-      <div className="relative z-10 h-full flex flex-col">
-        
-        {/* Header */}
-        <div className="p-8 flex justify-between items-start">
-            <div>
-                <h1 className={`text-4xl font-bold ${styles.text} drop-shadow-lg`}>{eventName}</h1>
-                <p className={`text-xl opacity-80 ${styles.text} mt-2`}>#CanlıAkış</p>
-            </div>
-            <div className="bg-white/90 p-3 rounded-xl shadow-2xl backdrop-blur-sm">
-                {origin && <QRCodeSVG value={`${origin}/e/${slug}`} size={120} />}
-                <p className="text-center text-xs font-bold mt-2 text-black">Fotoğraf Yükle</p>
-            </div>
+    <div className={`fixed inset-0 overflow-hidden ${styles.bg} flex flex-col`}>
+      {/* Header */}
+      <div className="relative z-20 p-6 flex justify-between items-start bg-gradient-to-b from-black/50 to-transparent">
+        <div>
+            <h1 className={`text-4xl font-bold ${styles.text} drop-shadow-lg`}>{eventName}</h1>
+            <p className={`text-xl opacity-80 ${styles.text} mt-2`}>#CanlıAkış</p>
         </div>
+        <div className="bg-white/90 p-2 rounded-lg shadow-2xl backdrop-blur-sm flex flex-col items-center">
+            {origin && <QRCodeSVG value={`${origin}/e/${slug}`} size={100} />}
+            <p className="text-[10px] font-bold mt-1 text-black uppercase tracking-wider">Fotoğraf Yükle</p>
+        </div>
+      </div>
 
-        {/* Slideshow */}
-        <div className="flex-1 flex items-center justify-center p-8">
-            <AnimatePresence mode="wait">
+      {/* Marquee Rows */}
+      <div className="flex-1 flex flex-col justify-center gap-4 py-4 relative z-10">
+        
+        {/* Row 1 - Left to Right */}
+        {rows[0].length > 0 && (
+            <div className="h-[30vh]">
+                <Marquee gradient={false} speed={40} direction="right">
+                    {rows[0].map((photo) => (
+                        <div key={photo.id} className="mx-2 h-[28vh] w-auto aspect-[4/3] relative group">
+                            <FramedImage 
+                                src={photo.url} 
+                                alt="Slide" 
+                                frameStyle={frameStyle}
+                                className="h-full w-full shadow-lg"
+                                imageClassName="h-full w-full object-cover rounded-md"
+                            />
+                            {photo.mission && (
+                                <div className="absolute bottom-2 left-2 right-2 bg-black/60 backdrop-blur-md text-white text-xs py-1 px-2 rounded text-center truncate">
+                                    🎯 {photo.mission.text}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </Marquee>
+            </div>
+        )}
+
+        {/* Row 2 - Right to Left (Faster) */}
+        {rows[1].length > 0 && (
+            <div className="h-[35vh]">
+                <Marquee gradient={false} speed={50} direction="left">
+                    {rows[1].map((photo) => (
+                        <div key={photo.id} className="mx-2 h-[33vh] w-auto aspect-[4/3] relative group">
+                             <FramedImage 
+                                src={photo.url} 
+                                alt="Slide" 
+                                frameStyle={frameStyle}
+                                className="h-full w-full shadow-lg"
+                                imageClassName="h-full w-full object-cover rounded-md"
+                            />
+                             {photo.mission && (
+                                <div className="absolute bottom-2 left-2 right-2 bg-black/60 backdrop-blur-md text-white text-xs py-1 px-2 rounded text-center truncate">
+                                    🎯 {photo.mission.text}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </Marquee>
+            </div>
+        )}
+
+        {/* Row 3 - Left to Right */}
+        {rows[2].length > 0 && (
+            <div className="h-[30vh]">
+                <Marquee gradient={false} speed={35} direction="right">
+                    {rows[2].map((photo) => (
+                        <div key={photo.id} className="mx-2 h-[28vh] w-auto aspect-[4/3] relative group">
+                             <FramedImage 
+                                src={photo.url} 
+                                alt="Slide" 
+                                frameStyle={frameStyle}
+                                className="h-full w-full shadow-lg"
+                                imageClassName="h-full w-full object-cover rounded-md"
+                            />
+                             {photo.mission && (
+                                <div className="absolute bottom-2 left-2 right-2 bg-black/60 backdrop-blur-md text-white text-xs py-1 px-2 rounded text-center truncate">
+                                    🎯 {photo.mission.text}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </Marquee>
+            </div>
+        )}
+      </div>
+
+      {/* Spotlight Overlay */}
+      <AnimatePresence>
+        {spotlightPhoto && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-10"
+            >
                 <motion.div
-                    key={currentPhoto.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.1 }}
-                    transition={{ duration: 0.8 }}
+                    initial={{ scale: 0.5, y: 100 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.5, y: -100, opacity: 0 }}
+                    transition={{ type: "spring", damping: 20 }}
                     className="relative max-h-full max-w-full"
                 >
                     <FramedImage 
-                        src={currentPhoto.url} 
-                        alt="Live slide" 
+                        src={spotlightPhoto.url} 
+                        alt="Spotlight" 
                         frameStyle={frameStyle}
-                        className="max-h-[80vh] w-auto shadow-[0_0_50px_rgba(0,0,0,0.3)]"
-                        imageClassName="max-h-[80vh] w-auto object-contain rounded-lg"
+                        className="max-h-[80vh] w-auto shadow-[0_0_100px_rgba(255,255,255,0.2)]"
+                        imageClassName="max-h-[80vh] w-auto object-contain rounded-xl"
                     />
                     
-                    {/* Badges */}
-                    <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-20">
-                        {/* Mission Badge */}
-                        {currentPhoto.mission && (
-                            <motion.div 
-                                initial={{ scale: 0, x: 20 }}
-                                animate={{ scale: 1, x: 0 }}
-                                className="bg-blue-600 text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 max-w-[200px]"
-                            >
-                                <span className="truncate text-sm">
-                                    🎯 {currentPhoto.mission.text}
-                                </span>
-                            </motion.div>
-                        )}
-
-                        {/* New Badge */}
-                        {new Date(currentPhoto.createdAt).getTime() > Date.now() - 60000 && !currentPhoto.mission && (
-                            <motion.div 
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="bg-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg animate-pulse"
-                            >
-                                YENİ!
-                            </motion.div>
-                        )}
-                    </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="absolute -bottom-16 left-0 right-0 text-center"
+                    >
+                        <span className="inline-block bg-white text-black px-6 py-2 rounded-full font-bold text-xl shadow-lg">
+                            {spotlightPhoto.mission ? `🎯 ${spotlightPhoto.mission.text}` : '✨ YENİ FOTOĞRAF!'}
+                        </span>
+                    </motion.div>
                 </motion.div>
-            </AnimatePresence>
-        </div>
-
-        {/* Footer */}
-        <div className="p-6 text-center">
-            <p className={`text-sm opacity-60 ${styles.text}`}>
-                EtkinlikQR ile anılarınızı paylaşın
-            </p>
-        </div>
-      </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

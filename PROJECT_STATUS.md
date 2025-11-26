@@ -84,6 +84,11 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 - [x] **Veri Takibi:** Misafir ilerlemesi cihaz bazlı (localStorage) takip ediliyor.
 - [x] **Yönetim:** Etkinlik panelinden özelliği açıp kapatma ve görev yönetimi.
 
+### 9. Dinamik Canlı Akış (Netflix-Style) (YENİ)
+- [x] **Kayan Şeritler:** Fotoğraflar 3 satır halinde sürekli akan bir şerit (Marquee) olarak gösteriliyor.
+- [x] **Spotlight Modu:** Yeni fotoğraf yüklendiğinde akış duraksamadan, yeni fotoğraf ekranın ortasında büyükçe beliriyor (Fragman modu).
+- [x] **Performans:** `react-fast-marquee` ile akıcı animasyonlar.
+
 ## 🚧 Devam Eden / İyileştirilmesi Gerekenler
 - [ ] **Mobil Uyumluluk Testleri:** Farklı cihazlarda detaylı testler.
 - [ ] **Performans:** Büyük galerilerde sayfalama (pagination) veya sonsuz kaydırma (infinite scroll).
