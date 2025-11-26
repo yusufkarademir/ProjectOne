@@ -7,6 +7,7 @@ interface FramedImageProps {
   imageClassName?: string;
   frameStyle?: 'none' | 'polaroid' | 'gradient' | 'minimal' | 'corners' | 'cinema' | 'vintage' | 'gold' | 'neon' | 'floral';
   watermarkText?: string | null;
+  flexibleFrame?: boolean;
 }
 
 export default function FramedImage({ 
@@ -15,7 +16,8 @@ export default function FramedImage({
   className = '', 
   imageClassName = '', 
   frameStyle = 'none',
-  watermarkText = null
+  watermarkText = null,
+  flexibleFrame = false
 }: FramedImageProps) {
   if (frameStyle === 'none') {
     return (
@@ -50,7 +52,7 @@ export default function FramedImage({
   if (frameStyle === 'polaroid') {
     return (
       <div className={`bg-white p-3 pb-12 shadow-lg rotate-1 transform transition-transform hover:rotate-0 relative ${className}`}>
-        <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-100 shadow-inner">
+        <div className={`relative w-full overflow-hidden bg-gray-100 shadow-inner ${flexibleFrame ? 'h-full' : 'aspect-[4/5]'}`}>
             <img 
                 src={src} 
                 alt={alt} 

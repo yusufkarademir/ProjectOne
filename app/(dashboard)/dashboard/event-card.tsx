@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Calendar, ImageIcon, QrCode, Edit, Trash2, Copy, Download, ExternalLink, MoreVertical, Play, Eye } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { deleteEvent, duplicateEvent } from '../../lib/event-actions';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -98,12 +99,15 @@ export default function EventCard({ event }: { event: Event }) {
     }
   };
 
+  const eventLink = origin ? `${origin}/e/${event.slug}` : '';
+
   const handleCopyLink = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const link = `${window.location.origin}/e/${event.slug}`;
-    navigator.clipboard.writeText(link);
-    toast.success('Link kopyalandı!');
+    if (eventLink) {
+        navigator.clipboard.writeText(eventLink);
+        toast.success('Link kopyalandı!');
+    }
   };
 
   const eventDate = new Date(event.date);
@@ -117,8 +121,7 @@ export default function EventCard({ event }: { event: Event }) {
 
   return (
     <>
-      <Link href={`/events/${event.id}`} className="block group">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 relative h-full flex flex-col">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 relative h-full flex flex-col group">
             {/* Status Badge */}
             <div className="absolute top-4 right-4 z-10">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm backdrop-blur-md ${
@@ -130,12 +133,20 @@ export default function EventCard({ event }: { event: Event }) {
                 </span>
             </div>
 
-            {/* Card Header / Cover Placeholder */}
-            <div className="h-32 bg-gradient-to-r from-slate-100 to-slate-200 relative overflow-hidden group-hover:from-blue-50 group-hover:to-indigo-50 transition-colors">
-                <div className="absolute inset-0 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity">
-                    <QrCode size={64} />
+            {/* Card Header / QR Code Area */}
+            <div className="h-48 bg-gradient-to-br from-slate-50 to-slate-100 relative overflow-hidden group-hover:from-blue-50 group-hover:to-indigo-50 transition-colors flex items-center justify-center p-6">
+                <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 transform group-hover:scale-105 transition-transform duration-300">
+                    {origin && (
+                        <QRCodeSVG 
+                            value={eventLink} 
+                            size={120}
+                            level="M"
+                            className="opacity-90 group-hover:opacity-100 transition-opacity"
+                        />
+                    )}
                 </div>
-                <div className="absolute bottom-4 left-4">
+                
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white/80 to-transparent">
                      <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-1">{event.name}</h3>
                      <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
                         <Calendar size={12} />
@@ -146,6 +157,20 @@ export default function EventCard({ event }: { event: Event }) {
 
             {/* Card Body */}
             <div className="p-4 flex-1 flex flex-col">
+                {/* Link Display */}
+                <div className="mb-4 p-2 bg-gray-50 rounded-lg border border-gray-100 flex items-center gap-2 group/link">
+                    <div className="flex-1 text-xs text-gray-500 truncate font-mono">
+                        {eventLink || 'Yükleniyor...'}
+                    </div>
+                    <button 
+                        onClick={handleCopyLink}
+                        className="p-1.5 hover:bg-white rounded-md text-gray-400 hover:text-blue-600 transition-colors shadow-sm opacity-0 group-hover/link:opacity-100"
+                        title="Kopyala"
+                    >
+                        <Copy size={14} />
+                    </button>
+                </div>
+
                 {/* Stats */}
                 <div className="flex items-center gap-4 mb-6">
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium">
@@ -154,17 +179,20 @@ export default function EventCard({ event }: { event: Event }) {
                     </div>
                 </div>
 
-                {/* Main Action Button - Big and Prominent */}
+                {/* Main Action Button */}
                 <div className="mt-auto">
-                    <div className="w-full bg-gray-900 text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 group-hover:bg-blue-600 transition-colors shadow-lg shadow-gray-200 group-hover:shadow-blue-200">
+                    <Link 
+                        href={`/events/${event.id}`}
+                        className="w-full bg-gray-900 text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors shadow-lg shadow-gray-200 hover:shadow-blue-200"
+                    >
                         <Edit size={18} />
                         <span>Etkinliği Yönet</span>
-                    </div>
+                    </Link>
                 </div>
             </div>
 
             {/* Quick Actions Toolbar */}
-            <div className="bg-gray-50 p-2 border-t border-gray-100 flex items-center justify-between gap-1" onClick={(e) => e.preventDefault()}>
+            <div className="bg-gray-50 p-2 border-t border-gray-100 flex items-center justify-between gap-1">
                 <Link 
                     href={`/e/${event.slug}`}
                     target="_blank"
@@ -197,14 +225,6 @@ export default function EventCard({ event }: { event: Event }) {
                 <div className="w-px h-8 bg-gray-200 mx-1"></div>
 
                 <button
-                    onClick={handleCopyLink}
-                    className="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-500 hover:text-gray-900"
-                    title="Linki Kopyala"
-                >
-                    <Copy size={16} />
-                </button>
-
-                <button
                     onClick={handleDuplicate}
                     className="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-500 hover:text-gray-900"
                     title="Kopyala"
@@ -213,19 +233,14 @@ export default function EventCard({ event }: { event: Event }) {
                 </button>
                 
                 <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setDeleteModalOpen(true);
-                    }}
+                    onClick={() => setDeleteModalOpen(true)}
                     className="p-2 rounded-lg hover:bg-red-50 hover:shadow-sm transition-all text-gray-400 hover:text-red-600"
                     title="Sil"
                 >
                     <Trash2 size={16} />
                 </button>
             </div>
-        </div>
-      </Link>
+      </div>
 
       <DeleteModal
         isOpen={deleteModalOpen}

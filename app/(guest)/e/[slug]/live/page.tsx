@@ -18,7 +18,7 @@ export default async function LivePage({ params }: { params: Promise<{ slug: str
       type: 'image',
     },
     orderBy: { createdAt: 'desc' },
-    take: 20,
+    take: 100,
     select: {
       id: true,
       url: true,
