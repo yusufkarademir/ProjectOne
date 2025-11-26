@@ -6,6 +6,8 @@ import CorporateTemplate from '@/app/components/templates/CorporateTemplate';
 import PartyTemplate from '@/app/components/templates/PartyTemplate';
 import FaceFinder from '@/app/components/ai/FaceFinder';
 
+import { incrementViewCount } from '@/app/lib/analytics-actions';
+
 export default async function EventPage({
   params,
 }: {
@@ -19,6 +21,9 @@ export default async function EventPage({
   if (!event) {
     notFound();
   }
+
+  // Track view
+  await incrementViewCount(slug);
 
   const themeConfig = (event.themeConfig as any) || {};
   const theme = themeConfig.theme || 'modern';

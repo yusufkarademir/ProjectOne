@@ -6,6 +6,7 @@ import { X, ChevronLeft, ChevronRight, Download, Grid, List, CheckSquare, Square
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { deletePhotos } from '../lib/gallery-actions';
+import { incrementDownloadCount } from '../lib/analytics-actions';
 import toast from 'react-hot-toast';
 import FramedImage from './FramedImage';
 
@@ -76,6 +77,10 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
 
   const handleDownload = async (photo: Photo, e?: React.MouseEvent) => {
       e?.stopPropagation();
+      
+      // Track download
+      incrementDownloadCount(photo.id);
+
       const filename = `photo-${photo.id}.jpg`;
       const proxyUrl = getProxyUrl(photo.url, filename, true);
       
@@ -96,6 +101,9 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
         const folder = zip.folder("fotograflar");
         
         const selectedPhotos = photos.filter(p => selectedIds.has(p.id));
+        
+        // Track bulk downloads
+        selectedPhotos.forEach(p => incrementDownloadCount(p.id));
         
         const promises = selectedPhotos.map(async (photo, index) => {
             try {
