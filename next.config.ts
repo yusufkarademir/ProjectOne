@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '500mb', // Increase limit for video uploads
     },
   },
-  },
+
   typescript: {
     ignoreBuildErrors: true,
   },
