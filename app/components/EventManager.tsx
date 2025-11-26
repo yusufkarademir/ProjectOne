@@ -7,7 +7,8 @@ import AnnouncementSettings from './event-settings/AnnouncementSettings';
 import ThemeSettings from './event-settings/ThemeSettings';
 import QRCustomizer from './QRCustomizer';
 import PrivacySettings from './event-settings/PrivacySettings';
-import { Calendar, Layout, Megaphone, Palette, QrCode, Image as ImageIcon, Tv, Shield } from 'lucide-react';
+import PhotoHuntSettings from './event-settings/PhotoHuntSettings';
+import { Calendar, Layout, Megaphone, Palette, QrCode, Image as ImageIcon, Tv, Shield, Trophy } from 'lucide-react';
 import Link from 'next/link';
 
 const TABS = [
@@ -17,6 +18,7 @@ const TABS = [
   { id: 'theme', label: 'Görünüm & Tema', icon: Palette },
   { id: 'qr', label: 'QR Kod', icon: QrCode },
   { id: 'privacy', label: 'Güvenlik & Gizlilik', icon: Shield },
+  { id: 'photo-hunt', label: 'Fotoğraf Avı', icon: Trophy },
 ];
 
 export default function EventManager({ event }: { event: any }) {
@@ -84,7 +86,9 @@ export default function EventManager({ event }: { event: any }) {
                 {activeTab === 'announcements' && 'Misafirlerinize iletmek istediğiniz duyuruları buradan ekleyebilirsiniz.'}
                 {activeTab === 'theme' && 'Karşılama sayfasının (Vitrin) görünümünü buradan özelleştirebilirsiniz.'}
                 {activeTab === 'qr' && 'Etkinliğinize özel QR kodunu buradan tasarlayabilir ve indirebilirsiniz.'}
+                {activeTab === 'qr' && 'Etkinliğinize özel QR kodunu buradan tasarlayabilir ve indirebilirsiniz.'}
                 {activeTab === 'privacy' && 'Etkinliğinizin gizlilik ve güvenlik ayarlarını buradan yönetebilirsiniz.'}
+                {activeTab === 'photo-hunt' && 'Misafirleriniz için eğlenceli fotoğraf görevleri oluşturun.'}
             </p>
           </div>
 
@@ -103,6 +107,7 @@ export default function EventManager({ event }: { event: any }) {
                 </div>
             )}
             {activeTab === 'privacy' && <PrivacySettings event={event} />}
+            {activeTab === 'photo-hunt' && <PhotoHuntSettings event={event} />}
           </div>
         </div>
       </div>

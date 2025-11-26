@@ -228,6 +228,11 @@ export async function getLatestPhotos(slug: string, after?: string) {
         id: true,
         url: true,
         createdAt: true,
+        mission: {
+          select: {
+            text: true
+          }
+        }
       }
     });
 

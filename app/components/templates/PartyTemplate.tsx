@@ -2,7 +2,7 @@
 
 import { TemplateProps } from './types';
 import Link from 'next/link';
-import { Camera, Images, MapPin, Calendar, Music } from 'lucide-react';
+import { Camera, Images, MapPin, Calendar, Music, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import confetti from 'canvas-confetti';
@@ -70,7 +70,18 @@ export default function PartyTemplate({ event }: TemplateProps) {
             </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl mb-16">
+        <div className={`grid grid-cols-1 gap-6 w-full max-w-4xl mb-16 ${event.isGameEnabled ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+            {event.isGameEnabled && (
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Link
+                        href={`/e/${event.slug}/game`}
+                        className="flex flex-col items-center justify-center gap-4 bg-[#00ffff] text-[#2a0a4a] p-8 rounded-3xl font-black text-xl shadow-[0_0_30px_rgba(0,255,255,0.4)] hover:shadow-[0_0_50px_rgba(0,255,255,0.6)] transition-all border-4 border-white/20"
+                    >
+                        <Trophy size={48} />
+                        FOTOĞRAF AVI
+                    </Link>
+                </motion.div>
+            )}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                     href={`/e/${event.slug}/upload`}

@@ -77,6 +77,13 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 - [x] **Yüksek Limit:** 500MB'a kadar video yükleme desteği.
 - [x] **İlerleme Takibi:** Canlı yükleme durumu ve detaylı hata raporlama.
 
+### 8. Fotoğraf Avı (Gamification) (YENİ)
+- [x] **Görev Sistemi:** Organizatörler için özel fotoğraf görevleri oluşturma (örn: "Gelinle Selfie").
+- [x] **Oyun Arayüzü:** Misafirler için ilerleme çubuğu ve konfeti animasyonlu oyun deneyimi.
+- [x] **Entegrasyon:** Tüm temalara (Modern, Düğün, Kurumsal, Parti) "Fotoğraf Avı" butonu eklendi.
+- [x] **Veri Takibi:** Misafir ilerlemesi cihaz bazlı (localStorage) takip ediliyor.
+- [x] **Yönetim:** Etkinlik panelinden özelliği açıp kapatma ve görev yönetimi.
+
 ## 🚧 Devam Eden / İyileştirilmesi Gerekenler
 - [ ] **Mobil Uyumluluk Testleri:** Farklı cihazlarda detaylı testler.
 - [ ] **Performans:** Büyük galerilerde sayfalama (pagination) veya sonsuz kaydırma (infinite scroll).

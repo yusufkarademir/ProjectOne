@@ -40,7 +40,18 @@ export default async function DashboardPage({
     },
   });
 
-  if (!user) return null;
+  if (!user) {
+    // Session exists but user not in DB (likely DB reset)
+    return (
+        <div className="p-8 text-center">
+            <h2 className="text-xl font-bold text-red-600 mb-2">Kullanıcı Bulunamadı</h2>
+            <p className="text-gray-600 mb-4">Veritabanı sıfırlanmış olabilir. Lütfen tekrar giriş yapın veya kayıt olun.</p>
+            <Link href="/api/auth/signout" className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                Çıkış Yap ve Tekrar Dene
+            </Link>
+        </div>
+    );
+  }
 
   const statsUser = await prisma.user.findUnique({
       where: { email: session.user.email },

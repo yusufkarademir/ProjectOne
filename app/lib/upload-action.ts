@@ -9,8 +9,9 @@ export async function uploadPhotos(prevState: any, formData: FormData) {
     const files = formData.getAll('file') as File[];
     const eventId = formData.get('eventId') as string;
     const slug = formData.get('slug') as string;
+    const missionId = formData.get('missionId') as string | null;
 
-    console.log('Upload request received:', { eventId, slug, fileCount: files.length });
+    console.log('Upload request received:', { eventId, slug, missionId, fileCount: files.length });
 
     if (!files || files.length === 0 || !eventId || !slug) {
       return { message: 'Dosya veya etkinlik bilgisi eksik.', success: false };
@@ -78,6 +79,7 @@ export async function uploadPhotos(prevState: any, formData: FormData) {
               type: isVideo ? 'video' : 'image',
               mimeType: file.type,
               status: initialStatus,
+              missionId: missionId || null,
             },
           });
           results.push(file.name);

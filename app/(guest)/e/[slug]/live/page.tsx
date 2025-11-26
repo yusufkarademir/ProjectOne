@@ -23,6 +23,11 @@ export default async function LivePage({ params }: { params: Promise<{ slug: str
       id: true,
       url: true,
       createdAt: true,
+      mission: {
+        select: {
+          text: true
+        }
+      }
     }
   });
 

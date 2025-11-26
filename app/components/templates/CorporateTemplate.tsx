@@ -2,7 +2,7 @@
 
 import { TemplateProps } from './types';
 import Link from 'next/link';
-import { Camera, Images, MapPin, Calendar, Clock } from 'lucide-react';
+import { Camera, Images, MapPin, Calendar, Clock, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function CorporateTemplate({ event }: TemplateProps) {
@@ -58,6 +58,15 @@ export default function CorporateTemplate({ event }: TemplateProps) {
                     transition={{ delay: 0.3 }}
                     className="flex gap-3"
                 >
+                    {event.isGameEnabled && (
+                        <Link
+                            href={`/e/${event.slug}/game`}
+                            className="bg-green-600 text-white border border-green-500 px-5 py-2.5 rounded font-semibold hover:bg-green-500 transition-colors flex items-center gap-2 text-sm"
+                        >
+                            <Trophy size={16} />
+                            Fotoğraf Avı
+                        </Link>
+                    )}
                     <Link
                         href={`/e/${event.slug}/upload`}
                         className="bg-white text-gray-900 px-5 py-2.5 rounded font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2 text-sm"

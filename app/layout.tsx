@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: "EtkinlikQR",
@@ -15,9 +16,10 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body>
-        {children}
-        <Toaster 
-          position="top-right"
+        <Providers>
+          {children}
+          <Toaster 
+            position="top-right"
           toastOptions={{
             duration: 4000,
             style: {
@@ -40,6 +42,7 @@ export default function RootLayout({
             },
           }}
         />
+        </Providers>
       </body>
     </html>
   );

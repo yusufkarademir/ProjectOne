@@ -123,16 +123,32 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
                         imageClassName="max-h-[80vh] w-auto object-contain rounded-lg"
                     />
                     
-                    {/* "New" Badge */}
-                    {new Date(currentPhoto.createdAt).getTime() > Date.now() - 60000 && (
-                        <motion.div 
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg animate-pulse z-20"
-                        >
-                            YENİ!
-                        </motion.div>
-                    )}
+                    {/* Badges */}
+                    <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-20">
+                        {/* Mission Badge */}
+                        {currentPhoto.mission && (
+                            <motion.div 
+                                initial={{ scale: 0, x: 20 }}
+                                animate={{ scale: 1, x: 0 }}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 max-w-[200px]"
+                            >
+                                <span className="truncate text-sm">
+                                    🎯 {currentPhoto.mission.text}
+                                </span>
+                            </motion.div>
+                        )}
+
+                        {/* New Badge */}
+                        {new Date(currentPhoto.createdAt).getTime() > Date.now() - 60000 && !currentPhoto.mission && (
+                            <motion.div 
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="bg-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg animate-pulse"
+                            >
+                                YENİ!
+                            </motion.div>
+                        )}
+                    </div>
                 </motion.div>
             </AnimatePresence>
         </div>

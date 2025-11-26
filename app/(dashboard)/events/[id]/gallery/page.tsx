@@ -42,7 +42,9 @@ export default async function OrganizerGalleryPage({ params }: { params: Promise
           <span>Dashboard</span>
         </Link>
         <ChevronRight size={14} />
-        <span className="text-gray-700">{event.name}</span>
+        <Link href={`/events/${event.id}`} className="text-gray-700 hover:text-gray-900 hover:underline">
+            {event.name}
+        </Link>
         <ChevronRight size={14} />
         <span className="text-gray-900 font-medium">Galeri</span>
       </div>

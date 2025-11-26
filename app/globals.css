@@ -5,15 +5,36 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Dark mode removed to ensure consistent light theme */
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Global Input Styles Fix */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+textarea,
+select {
+  color: #111827; /* gray-900 */
+  background-color: #ffffff;
+  border-color: #d1d5db; /* gray-300 */
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af; /* gray-400 */
 }

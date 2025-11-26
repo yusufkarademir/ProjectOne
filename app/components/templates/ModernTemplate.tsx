@@ -2,7 +2,7 @@
 
 import { TemplateProps } from './types';
 import Link from 'next/link';
-import { Camera, Images, MapPin, Calendar, Megaphone } from 'lucide-react';
+import { Camera, Images, MapPin, Calendar, Megaphone, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ModernTemplate({ event }: TemplateProps) {
@@ -62,6 +62,15 @@ export default function ModernTemplate({ event }: TemplateProps) {
 
             {/* Actions */}
             <div className="space-y-4 mb-8">
+              {event.isGameEnabled && (
+                <Link
+                  href={`/e/${event.slug}/game`}
+                  className="group flex items-center justify-center gap-3 w-full font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg bg-green-600 text-white hover:bg-green-700"
+                >
+                  <Trophy className="w-6 h-6" />
+                  <span>Fotoğraf Avı'na Başla!</span>
+                </Link>
+              )}
               <Link
                 href={`/e/${event.slug}/upload`}
                 className="group flex items-center justify-center gap-3 w-full font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg bg-blue-600 text-white hover:bg-blue-700"

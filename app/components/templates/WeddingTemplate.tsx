@@ -2,7 +2,7 @@
 
 import { TemplateProps } from './types';
 import Link from 'next/link';
-import { Camera, Images, MapPin, Calendar, Clock } from 'lucide-react';
+import { Camera, Images, MapPin, Calendar, Clock, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function WeddingTemplate({ event }: TemplateProps) {
@@ -70,6 +70,15 @@ export default function WeddingTemplate({ event }: TemplateProps) {
                 transition={{ delay: 0.8 }}
                 className="flex flex-col gap-4 mb-12"
             >
+                {event.isGameEnabled && (
+                    <Link
+                        href={`/e/${event.slug}/game`}
+                        className="bg-[#d4af37] text-white px-8 py-4 rounded-full font-medium tracking-wide hover:bg-[#c5a028] transition-all shadow-lg shadow-[#d4af37]/20 flex items-center justify-center gap-3"
+                    >
+                        <Trophy size={20} />
+                        Fotoğraf Avı'na Başla
+                    </Link>
+                )}
                 <Link
                     href={`/e/${event.slug}/upload`}
                     className="bg-[#d4af37] text-white px-8 py-4 rounded-full font-medium tracking-wide hover:bg-[#c5a028] transition-all shadow-lg shadow-[#d4af37]/20 flex items-center justify-center gap-3"
