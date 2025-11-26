@@ -1,8 +1,9 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { updateProfile } from '../../lib/settings-actions';
-import { User } from 'lucide-react';
+import { User, Image as ImageIcon } from 'lucide-react';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -17,9 +18,9 @@ function SubmitButton() {
   );
 }
 
-export default function ProfileForm({ user }: { user: { name: string | null; email: string } }) {
+export default function ProfileForm({ user }: { user: { name: string | null; email: string; image: string | null } }) {
   const initialState = { message: '', errors: {}, success: false };
-  const [state, dispatch] = useFormState(updateProfile, initialState);
+  const [state, dispatch] = useActionState(updateProfile, initialState);
 
   return (
     <form action={dispatch} className="space-y-4">
@@ -41,6 +42,23 @@ export default function ProfileForm({ user }: { user: { name: string | null; ema
         {state.errors?.name && (
           <p className="text-sm text-red-500 mt-1">{state.errors.name}</p>
         )}
+      </div>
+
+      <div>
+        <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
+          Profil Fotoğrafı URL
+        </label>
+        <div className="relative">
+            <ImageIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <input
+            type="url"
+            id="image"
+            name="image"
+            defaultValue={user.image || ''}
+            placeholder="https://example.com/avatar.jpg"
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+        </div>
       </div>
 
       <div>

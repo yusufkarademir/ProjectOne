@@ -37,7 +37,7 @@ export default async function SettingsPage() {
                 </div>
             </div>
             <div className="p-6">
-                <ProfileForm user={{ name: user.name, email: user.email }} />
+                <ProfileForm user={{ name: user.name, email: user.email, image: user.image }} />
             </div>
         </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { changePassword } from '../../lib/settings-actions';
 import { Lock } from 'lucide-react';
 
@@ -19,7 +20,7 @@ function SubmitButton() {
 
 export default function PasswordForm() {
   const initialState = { message: '', errors: {}, success: false };
-  const [state, dispatch] = useFormState(changePassword, initialState);
+  const [state, dispatch] = useActionState(changePassword, initialState);
 
   return (
     <form action={dispatch} className="space-y-4">

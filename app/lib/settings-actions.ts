@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 const UpdateProfileSchema = z.object({
   name: z.string().min(2, 'İsim en az 2 karakter olmalıdır.'),
+  image: z.string().optional(),
 });
 
 const ChangePasswordSchema = z.object({
@@ -27,6 +28,7 @@ export async function updateProfile(prevState: any, formData: FormData) {
 
   const validatedFields = UpdateProfileSchema.safeParse({
     name: formData.get('name'),
+    image: formData.get('image'),
   });
 
   if (!validatedFields.success) {
@@ -37,12 +39,12 @@ export async function updateProfile(prevState: any, formData: FormData) {
     };
   }
 
-  const { name } = validatedFields.data;
+  const { name, image } = validatedFields.data;
 
   try {
     await prisma.user.update({
       where: { email: session.user.email },
-      data: { name },
+      data: { name, image },
     });
 
     revalidatePath('/settings');

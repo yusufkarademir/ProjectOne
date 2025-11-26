@@ -54,8 +54,12 @@ export default function Sidebar({ user, recentEvents = [] }: SidebarProps) {
       {/* User Profile - Compact */}
       <div className="px-4 py-6 bg-slate-800/30">
         <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-sm font-bold shadow-inner border border-white/10">
-                {user?.name?.[0]?.toUpperCase() || <UserIcon size={16} />}
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-sm font-bold shadow-inner border border-white/10 overflow-hidden relative">
+                {user?.image ? (
+                    <img src={user.image} alt={user.name || 'User'} className="w-full h-full object-cover" />
+                ) : (
+                    user?.name?.[0]?.toUpperCase() || <UserIcon size={16} />
+                )}
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">{user?.name || 'Kullanıcı'}</p>

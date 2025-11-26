@@ -45,11 +45,15 @@ export default async function DashboardLayout({
   if (session?.user?.email) {
       const dbUser = await prisma.user.findUnique({
           where: { email: session.user.email },
-          select: { id: true, email: true }
+          select: { id: true, email: true, name: true, image: true }
       });
 
       if (dbUser) {
-          user = { name: dbUser.email, email: dbUser.email, image: null }; // Mocking name/image for sidebar
+          user = { 
+              name: dbUser.name || dbUser.email, 
+              email: dbUser.email, 
+              image: dbUser.image 
+          };
           
           recentEvents = await prisma.event.findMany({
               where: { organizerId: dbUser.id },

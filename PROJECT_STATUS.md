@@ -1,6 +1,6 @@
 # Proje Durumu ve İlerleme Raporu
 
-## 📅 Son Güncelleme: 26 Kasım 2024
+## 📅 Son Güncelleme: 27 Kasım 2024 (v0.6.5)
 
 Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve gelecek planlarını takip etmek için oluşturulmuştur.
 
@@ -97,6 +97,14 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 - [x] **Yüz Tanıma (Client-Side):** `face-api.js` ile misafirlerin selfie çekerek kendi fotoğraflarını bulması. Sunucu maliyeti yok, gizlilik odaklı.
 - [x] **İçerik Moderasyonu:** `nsfwjs` ile tarayıcı tabanlı +18 içerik kontrolü. Uygunsuz içerikler sunucuya yüklenmeden engellenir.
 - [x] **Proxy Sistemi:** CORS sorunlarını aşmak için güvenli görsel proxy altyapısı.
+
+### 11. Kullanıcı Profili ve Ayarlar (v0.6.5)
+- [x] **Profil Yönetimi:**
+    - İsim ve Profil Fotoğrafı (URL) güncelleme.
+    - Dashboard Sidebar'da gerçek kullanıcı bilgileri.
+    - Veritabanı şeması güncellemesi (`User` tablosuna `name` ve `image` eklendi).
+- [x] **React 19 Uyumluluğu:**
+    - `useFormState` -> `useActionState` geçişi yapıldı.
 
 ## 🚧 Devam Eden / İyileştirilmesi Gerekenler
 - [ ] **Mobil Uyumluluk Testleri:** Farklı cihazlarda detaylı testler.
