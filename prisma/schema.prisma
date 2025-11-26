@@ -36,8 +36,9 @@ model Event {
   photos      Photo[]
   
   // Photo Hunt (Game) Features
-  isGameEnabled Boolean   @default(false)
-  missions      Mission[]
+  isGameEnabled       Boolean  @default(false)
+  isAiModerationEnabled Boolean @default(true)
+  missions            Mission[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

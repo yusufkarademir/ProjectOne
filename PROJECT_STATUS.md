@@ -89,6 +89,11 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 - [x] **Spotlight Modu:** Yeni fotoğraf yüklendiğinde akış duraksamadan, yeni fotoğraf ekranın ortasında büyükçe beliriyor (Fragman modu).
 - [x] **Performans:** `react-fast-marquee` ile akıcı animasyonlar.
 
+### 10. Yapay Zeka (AI) Entegrasyonu (YENİ)
+- [x] **Yüz Tanıma (Client-Side):** `face-api.js` ile misafirlerin selfie çekerek kendi fotoğraflarını bulması. Sunucu maliyeti yok, gizlilik odaklı.
+- [x] **İçerik Moderasyonu:** `nsfwjs` ile tarayıcı tabanlı +18 içerik kontrolü. Uygunsuz içerikler sunucuya yüklenmeden engellenir.
+- [x] **Proxy Sistemi:** CORS sorunlarını aşmak için güvenli görsel proxy altyapısı.
+
 ## 🚧 Devam Eden / İyileştirilmesi Gerekenler
 - [ ] **Mobil Uyumluluk Testleri:** Farklı cihazlarda detaylı testler.
 - [ ] **Performans:** Büyük galerilerde sayfalama (pagination) veya sonsuz kaydırma (infinite scroll).

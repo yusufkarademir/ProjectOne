@@ -4,6 +4,7 @@ import ModernTemplate from '@/app/components/templates/ModernTemplate';
 import WeddingTemplate from '@/app/components/templates/WeddingTemplate';
 import CorporateTemplate from '@/app/components/templates/CorporateTemplate';
 import PartyTemplate from '@/app/components/templates/PartyTemplate';
+import FaceFinder from '@/app/components/ai/FaceFinder';
 
 export default async function EventPage({
   params,
@@ -25,13 +26,33 @@ export default async function EventPage({
   // Render the appropriate template based on the theme selection
   switch (theme) {
     case 'wedding':
-      return <WeddingTemplate event={event} />;
+      return (
+        <>
+          <WeddingTemplate event={event} />
+          <FaceFinder slug={event.slug} />
+        </>
+      );
     case 'corporate':
-      return <CorporateTemplate event={event} />;
+      return (
+        <>
+          <CorporateTemplate event={event} />
+          <FaceFinder slug={event.slug} />
+        </>
+      );
     case 'party':
-      return <PartyTemplate event={event} />;
+      return (
+        <>
+          <PartyTemplate event={event} />
+          <FaceFinder slug={event.slug} />
+        </>
+      );
     case 'modern':
     default:
-      return <ModernTemplate event={event} />;
+      return (
+        <>
+          <ModernTemplate event={event} />
+          <FaceFinder slug={event.slug} />
+        </>
+      );
   }
 }

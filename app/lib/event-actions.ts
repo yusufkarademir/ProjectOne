@@ -260,11 +260,20 @@ export async function updateEventPrivacySettings(eventId: string, privacyConfig:
       return { success: false, message: 'Bu etkinliği düzenleme yetkiniz yok.' };
     }
 
+    // Extract isAiModerationEnabled from privacyConfig if present
+    const { isAiModerationEnabled, ...restPrivacyConfig } = privacyConfig;
+
+    const updateData: any = {
+      privacyConfig: restPrivacyConfig,
+    };
+
+    if (typeof isAiModerationEnabled !== 'undefined') {
+      updateData.isAiModerationEnabled = isAiModerationEnabled;
+    }
+
     await prisma.event.update({
       where: { id: eventId },
-      data: {
-        privacyConfig: privacyConfig,
-      },
+      data: updateData,
     });
 
     revalidatePath(`/events/${eventId}`);

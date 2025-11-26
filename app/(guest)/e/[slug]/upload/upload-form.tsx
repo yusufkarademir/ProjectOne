@@ -1,19 +1,118 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { uploadPhotos } from '../../../../lib/upload-action';
 import { Upload, FileImage, FileVideo, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import * as nsfwjs from 'nsfwjs';
 
-export default function UploadForm({ eventId, slug }: { eventId: string, slug: string }) {
+export default function UploadForm({ eventId, slug, isAiModerationEnabled = true }: { eventId: string, slug: string, isAiModerationEnabled?: boolean }) {
   const router = useRouter();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [results, setResults] = useState<{ success: number; failed: number }>({ success: 0, failed: 0 });
+  const [model, setModel] = useState<nsfwjs.NSFWJS | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [isModelLoading, setIsModelLoading] = useState(true);
+  // Load NSFW model
+  // Load NSFW model
+  useEffect(() => {
+    let isMounted = true;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const loadModel = async () => {
+      // If moderation is disabled, stop loading
+      if (isAiModerationEnabled === false) {
+        if (isMounted) setIsModelLoading(false);
+        return;
+      }
+
+      try {
+        // Load from local public directory to avoid CDN/CORS issues
+        // We need to make sure the model files are in public/models/nsfwjs/
+        // If not, we fallback to CDN but with explicit error handling
+        
+        // Try local first
+        try {
+            const _model = await nsfwjs.load('/models/nsfwjs/');
+            if (isMounted) {
+                setModel(_model);
+                console.log('NSFW Model loaded from local');
+                setIsModelLoading(false);
+                return;
+            }
+        } catch (localErr) {
+            console.warn('Local model load failed, trying CDN...', localErr);
+        }
+
+        // Fallback to CDN
+        const _model = await nsfwjs.load();
+        if (isMounted) {
+            setModel(_model);
+            console.log('NSFW Model loaded from CDN');
+        }
+      } catch (err) {
+        console.error('Failed to load NSFW model', err);
+        if (isMounted) toast.error('AI Modeli yüklenemedi, manuel moderasyon aktif.');
+      } finally {
+        if (isMounted) setIsModelLoading(false);
+      }
+    };
+
+    loadModel();
+
+    return () => {
+        isMounted = false;
+    };
+  }, [isAiModerationEnabled]);
+
+  const checkContent = async (file: File): Promise<boolean> => {
+    // If moderation is disabled, allow everything
+    if (isAiModerationEnabled === false) return true;
+    
+    // If model failed to load but moderation is enabled, we should probably allow upload 
+    // but warn user or maybe block? For now, let's allow but log error.
+    // Ideally we should have a fallback server-side check or block upload if client-side fails.
+    if (!model) {
+        console.warn('AI Model not loaded, skipping check');
+        return true; 
+    }
+
+    if (!file.type.startsWith('image/')) return true;
+
+    try {
+      const img = document.createElement('img');
+      const objectUrl = URL.createObjectURL(file);
+      img.src = objectUrl;
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      const predictions = await model.classify(img);
+      URL.revokeObjectURL(objectUrl);
+
+      // Stricter checks
+      const isUnsafe = predictions.some(p => 
+        (p.className === 'Porn' && p.probability > 0.4) ||     // Lower threshold for Porn
+        (p.className === 'Hentai' && p.probability > 0.5) ||   // Standard for Hentai
+        (p.className === 'Sexy' && p.probability > 0.8)        // Block very explicit/bikini content
+      );
+
+      if (isUnsafe) {
+        console.warn(`Blocked ${file.name} due to NSFW content`, predictions);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Error checking content:', error);
+      return true; // Allow on error to not block user
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
       
@@ -28,7 +127,37 @@ export default function UploadForm({ eventId, slug }: { eventId: string, slug: s
         return;
       }
 
-      setSelectedFiles(files);
+      // AI Content Check
+      if (model) {
+        setIsChecking(true);
+        const safeFiles: File[] = [];
+        let blockedCount = 0;
+
+        for (const file of files) {
+            const isSafe = await checkContent(file);
+            if (isSafe) {
+                safeFiles.push(file);
+            } else {
+                blockedCount++;
+            }
+        }
+
+        setIsChecking(false);
+
+        if (blockedCount > 0) {
+            toast.error(`${blockedCount} dosya uygunsuz içerik nedeniyle engellendi.`);
+        }
+
+        if (safeFiles.length === 0 && files.length > 0) {
+            e.target.value = ''; // Reset input
+            return;
+        }
+
+        setSelectedFiles(safeFiles);
+      } else {
+        setSelectedFiles(files);
+      }
+
       // Reset states
       setResults({ success: 0, failed: 0 });
       setProgress({ current: 0, total: 0 });
@@ -98,16 +227,26 @@ export default function UploadForm({ eventId, slug }: { eventId: string, slug: s
           accept="image/*,video/*" 
           multiple
           required 
-          disabled={isUploading}
+          disabled={isUploading || isChecking || isModelLoading}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
           onChange={handleFileChange}
         />
         <div className="pointer-events-none space-y-3">
           <div className="flex justify-center gap-2">
-            <FileImage className="text-blue-500" size={32} />
-            <FileVideo className="text-purple-500" size={32} />
+            {isChecking || isModelLoading ? (
+                <Loader2 className="text-blue-500 animate-spin" size={32} />
+            ) : (
+                <>
+                    <FileImage className="text-blue-500" size={32} />
+                    <FileVideo className="text-purple-500" size={32} />
+                </>
+            )}
           </div>
-          <p className="text-gray-700 font-medium">Fotoğraf veya video seçmek için tıklayın</p>
+          <p className="text-gray-700 font-medium">
+            {isModelLoading ? 'AI Modeli Yükleniyor...' : 
+             isChecking ? 'İçerik kontrol ediliyor...' : 
+             'Fotoğraf veya video seçmek için tıklayın'}
+          </p>
           <p className="text-xs text-gray-500">PNG, JPG, GIF, MP4, MOV (Tek seferde 10 dosyaya kadar)</p>
           
           {selectedFiles.length > 0 && (

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { updateEventPrivacySettings } from '../../lib/event-actions';
 import toast from 'react-hot-toast';
-import { Shield, Lock, Eye, Download, CheckCircle } from 'lucide-react';
+import { Shield, Lock, Eye, Download, CheckCircle, Bot } from 'lucide-react';
 
 export default function PrivacySettings({ event }: { event: any }) {
   const privacyConfig = (event.privacyConfig as any) || {};
@@ -12,6 +12,7 @@ export default function PrivacySettings({ event }: { event: any }) {
     isGalleryPublic: privacyConfig.isGalleryPublic !== false, // Default true
     allowDownload: privacyConfig.allowDownload !== false,     // Default true
     requireModeration: privacyConfig.requireModeration === true, // Default false
+    isAiModerationEnabled: event.isAiModerationEnabled !== false, // Default true (from schema)
   });
   
   const [loading, setLoading] = useState(false);
@@ -99,6 +100,24 @@ export default function PrivacySettings({ event }: { event: any }) {
             </div>
             <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.requireModeration ? 'bg-blue-600' : 'bg-gray-300'}`}>
                 <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${settings.requireModeration ? 'translate-x-6' : 'translate-x-0'}`} />
+            </div>
+        </div>
+
+        {/* AI Moderation */}
+        <div className="flex items-start justify-between p-4 border rounded-xl hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => handleToggle('isAiModerationEnabled')}>
+            <div className="flex gap-4">
+                <div className={`p-2 rounded-lg ${settings.isAiModerationEnabled ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'}`}>
+                    <Bot size={24} />
+                </div>
+                <div>
+                    <h4 className="font-medium text-gray-900">Yapay Zeka (AI) Koruması</h4>
+                    <p className="text-sm text-gray-500 mt-1">
+                        Açık olduğunda, yüklenen fotoğraflar yapay zeka tarafından taranır ve uygunsuz (+18) içerikler otomatik engellenir.
+                    </p>
+                </div>
+            </div>
+            <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.isAiModerationEnabled ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${settings.isAiModerationEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
             </div>
         </div>
       </div>

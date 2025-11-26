@@ -89,7 +89,11 @@ export default async function UploadPageWrapper({ params }: { params: Promise<{ 
             <p className={styles.textMuted}>{event.name} - En güzel anılarınızı paylaşın</p>
           </div>
           
-          <UploadForm eventId={event.id} slug={event.slug} />
+          <UploadForm 
+            eventId={event.id} 
+            slug={event.slug} 
+            isAiModerationEnabled={(event as any).isAiModerationEnabled !== false} 
+          />
 
           <div className={`mt-6 pt-6 border-t flex justify-center gap-3 ${theme === 'dark' || theme === 'party' ? 'border-gray-700' : 'border-gray-100'}`}>
             <Link 
