@@ -25,7 +25,7 @@ interface GalleryGridProps {
     allowDownload?: boolean;
 }
 
-export default function GalleryGrid({ photos, eventSlug, canDelete = true, frameStyle = 'none', allowDownload = true }: GalleryGridProps) {
+export default function GalleryGrid({ photos, eventSlug, canDelete = true, frameStyle = 'none', allowDownload = true, watermarkText }: GalleryGridProps & { watermarkText?: string | null }) {
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -234,6 +234,7 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
                         src={photo.url} 
                         alt="Event photo" 
                         frameStyle={frameStyle}
+                        watermarkText={watermarkText}
                         className={`w-full h-full transition-transform duration-700 ${selectedIds.has(photo.id) ? 'scale-105' : 'group-hover:scale-110'}`}
                         imageClassName="w-full h-full object-cover"
                     />
@@ -283,7 +284,7 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
                         </div>
                       </div>
                       <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm border border-gray-100">
-                          <FramedImage src={photo.url} alt="" frameStyle={frameStyle} className="w-full h-full" imageClassName="w-full h-full object-cover" />
+                          <FramedImage src={photo.url} alt="" frameStyle={frameStyle} watermarkText={watermarkText} className="w-full h-full" imageClassName="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                           <p className="text-base font-semibold text-gray-900 truncate">Fotoğraf {index + 1}</p>
@@ -355,6 +356,7 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
                         src={photos[selectedIndex].url} 
                         alt="Full size" 
                         frameStyle={frameStyle}
+                        watermarkText={watermarkText}
                         className="max-h-[85vh] w-auto shadow-2xl"
                         imageClassName="max-h-[85vh] w-auto object-contain rounded-lg"
                     />

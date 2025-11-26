@@ -176,6 +176,7 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
             canDelete={false} 
             frameStyle={frameStyle}
             allowDownload={allowDownload}
+            watermarkText={(event as any).isWatermarkEnabled ? event.name : null}
           />
         )}
       </div>

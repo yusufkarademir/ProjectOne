@@ -7,13 +7,24 @@ import { toast } from 'react-hot-toast';
 import { getEventPhotosForAI } from '@/app/lib/ai-actions';
 import FramedImage from '../FramedImage';
 
-export default function FaceFinder({ slug }: { slug: string }) {
+interface Photo {
+  id: string;
+  url: string;
+}
+
+interface FaceFinderProps {
+  slug: string;
+  frameStyle?: 'none' | 'polaroid' | 'gradient' | 'minimal' | 'corners' | 'cinema' | 'vintage' | 'gold' | 'neon' | 'floral';
+  watermarkText?: string | null;
+}
+
+export default function FaceFinder({ slug, frameStyle = 'none', watermarkText }: FaceFinderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [referenceDescriptor, setReferenceDescriptor] = useState<Float32Array | null>(null);
   const [scanning, setScanning] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
-  const [matches, setMatches] = useState<any[]>([]);
+  const [matches, setMatches] = useState<Photo[]>([]);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -82,7 +93,7 @@ export default function FaceFinder({ slug }: { slug: string }) {
       setProgress({ current: 0, total: photos.length });
 
       const faceMatcher = new faceapi.FaceMatcher(referenceDescriptor, 0.6);
-      const foundPhotos = [];
+      const foundPhotos: Photo[] = [];
 
       // 2. Scan each photo
       for (let i = 0; i < photos.length; i++) {
@@ -206,7 +217,14 @@ export default function FaceFinder({ slug }: { slug: string }) {
                 <div className="grid grid-cols-2 gap-3">
                   {matches.map(photo => (
                     <div key={photo.id} className="aspect-square relative rounded-lg overflow-hidden border border-gray-100">
-                        <FramedImage src={photo.url} alt="Match" className="w-full h-full" imageClassName="object-cover w-full h-full" />
+                        <FramedImage 
+                            src={photo.url} 
+                            alt="Match" 
+                            frameStyle={frameStyle}
+                            watermarkText={watermarkText}
+                            className="w-full h-full" 
+                            imageClassName="object-cover w-full h-full" 
+                        />
                     </div>
                   ))}
                 </div>

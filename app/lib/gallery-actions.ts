@@ -15,20 +15,16 @@ export async function deletePhotos(photoIds: string[], eventSlug: string) {
 
     // 2. Delete from R2
     await Promise.all(photos.map(async (photo: { url: string }) => {
-      // Extract key from URL
-      // URL format: https://pub-xxx.r2.dev/events/eventId/filename
-      // We need: events/eventId/filename
-      const urlParts = photo.url.split('/');
-      const key = urlParts.slice(3).join('/'); // Assuming standard URL structure
-      
-      // If URL structure is different, we might need a more robust way to extract key
-      // For now, let's try to match the key format used in upload
-      // key = `events/${eventId}/${Date.now()}-${file.name}`
-      
-      // Better approach: store key in DB or extract carefully
-      // Let's assume the key is the part after the domain
-      if (key) {
-          await deleteFromR2(key);
+      try {
+        const url = new URL(photo.url);
+        // The key is the pathname, but without the leading slash
+        const key = url.pathname.substring(1);
+        
+        if (key) {
+            await deleteFromR2(key);
+        }
+      } catch (e) {
+        console.error('Error parsing URL for deletion:', photo.url, e);
       }
     }));
 

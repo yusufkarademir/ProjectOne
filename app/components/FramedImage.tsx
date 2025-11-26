@@ -1,43 +1,78 @@
 import React from 'react';
 
-type FrameStyle = 'none' | 'polaroid' | 'gradient' | 'minimal' | 'corners' | 'cinema' | 'vintage' | 'gold' | 'neon' | 'floral';
-
 interface FramedImageProps {
   src: string;
   alt: string;
-  frameStyle?: FrameStyle;
   className?: string;
   imageClassName?: string;
+  frameStyle?: 'none' | 'polaroid' | 'gradient' | 'minimal' | 'corners' | 'cinema' | 'vintage' | 'gold' | 'neon' | 'floral';
+  watermarkText?: string | null;
 }
 
 export default function FramedImage({ 
   src, 
   alt, 
-  frameStyle = 'none', 
-  className = '',
-  imageClassName = ''
+  className = '', 
+  imageClassName = '', 
+  frameStyle = 'none',
+  watermarkText = null
 }: FramedImageProps) {
-  
   if (frameStyle === 'none') {
     return (
-      <img 
-        src={src} 
-        alt={alt} 
-        className={`${className} ${imageClassName}`} 
-      />
+      <div className={`relative ${className}`}>
+        <img 
+            src={src} 
+            alt={alt} 
+            className={`w-full h-full object-cover ${imageClassName}`} 
+        />
+        {/* Watermark Overlay */}
+        {watermarkText && (
+            <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                    {Array(6).fill(watermarkText).map((text, i) => (
+                        <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                    ))}
+                </div>
+            </div>
+        )}
+        {/* Ghost Layer */}
+        {watermarkText && (
+            <div 
+                className="absolute inset-0 z-30" 
+                onContextMenu={(e) => e.preventDefault()}
+            />
+        )}
+      </div>
     );
   }
 
   // Polaroid: Classic instant photo look
   if (frameStyle === 'polaroid') {
     return (
-      <div className={`bg-white p-3 pb-12 shadow-lg rotate-1 transform transition-transform hover:rotate-0 ${className}`}>
+      <div className={`bg-white p-3 pb-12 shadow-lg rotate-1 transform transition-transform hover:rotate-0 relative ${className}`}>
         <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-100 shadow-inner">
             <img 
                 src={src} 
                 alt={alt} 
                 className={`w-full h-full object-cover ${imageClassName}`} 
             />
+             {/* Watermark Overlay */}
+            {watermarkText && (
+                <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                    <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                        {Array(6).fill(watermarkText).map((text, i) => (
+                            <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {/* Ghost Layer */}
+            {watermarkText && (
+                <div 
+                    className="absolute inset-0 z-30" 
+                    onContextMenu={(e) => e.preventDefault()}
+                />
+            )}
         </div>
       </div>
     );
@@ -46,13 +81,30 @@ export default function FramedImage({
   // Gradient: Modern Instagram-like border
   if (frameStyle === 'gradient') {
     return (
-      <div className={`p-1.5 rounded-2xl bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 ${className}`}>
-        <div className="bg-white p-1 rounded-xl overflow-hidden h-full">
+      <div className={`p-1.5 rounded-2xl bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 relative ${className}`}>
+        <div className="bg-white p-1 rounded-xl overflow-hidden h-full relative">
             <img 
                 src={src} 
                 alt={alt} 
                 className={`w-full h-full object-cover rounded-lg ${imageClassName}`} 
             />
+             {/* Watermark Overlay */}
+            {watermarkText && (
+                <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                    <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                        {Array(6).fill(watermarkText).map((text, i) => (
+                            <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {/* Ghost Layer */}
+            {watermarkText && (
+                <div 
+                    className="absolute inset-0 z-30" 
+                    onContextMenu={(e) => e.preventDefault()}
+                />
+            )}
         </div>
       </div>
     );
@@ -61,12 +113,29 @@ export default function FramedImage({
   // Minimal: Clean white border
   if (frameStyle === 'minimal') {
     return (
-      <div className={`border-[12px] border-white shadow-md ${className}`}>
+      <div className={`border-[12px] border-white shadow-md relative ${className}`}>
         <img 
             src={src} 
             alt={alt} 
             className={`w-full h-full object-cover ${imageClassName}`} 
         />
+         {/* Watermark Overlay */}
+         {watermarkText && (
+            <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                <div className="transform -rotate-45 whitespace-nowrap text-gray-500 font-bold text-xl sm:text-3xl tracking-widest mix-blend-multiply">
+                    {Array(6).fill(watermarkText).map((text, i) => (
+                        <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                    ))}
+                </div>
+            </div>
+        )}
+        {/* Ghost Layer */}
+        {watermarkText && (
+            <div 
+                className="absolute inset-0 z-30" 
+                onContextMenu={(e) => e.preventDefault()}
+            />
+        )}
       </div>
     );
   }
@@ -86,6 +155,23 @@ export default function FramedImage({
                 alt={alt} 
                 className={`w-full h-full object-cover ${imageClassName}`} 
             />
+             {/* Watermark Overlay */}
+            {watermarkText && (
+                <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                    <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                        {Array(6).fill(watermarkText).map((text, i) => (
+                            <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {/* Ghost Layer */}
+            {watermarkText && (
+                <div 
+                    className="absolute inset-0 z-30" 
+                    onContextMenu={(e) => e.preventDefault()}
+                />
+            )}
         </div>
       </div>
     );
@@ -94,7 +180,7 @@ export default function FramedImage({
   // Cinema: Film strip effect
   if (frameStyle === 'cinema') {
     return (
-      <div className={`bg-black p-4 ${className}`}>
+      <div className={`bg-black p-4 relative ${className}`}>
         {/* Top Perforations */}
         <div className="flex justify-between mb-2 px-1">
             {[...Array(8)].map((_, i) => (
@@ -102,12 +188,29 @@ export default function FramedImage({
             ))}
         </div>
         
-        <div className="border-2 border-white/10 overflow-hidden">
+        <div className="border-2 border-white/10 overflow-hidden relative">
             <img 
                 src={src} 
                 alt={alt} 
                 className={`w-full h-full object-cover ${imageClassName}`} 
             />
+             {/* Watermark Overlay */}
+            {watermarkText && (
+                <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                    <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                        {Array(6).fill(watermarkText).map((text, i) => (
+                            <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {/* Ghost Layer */}
+            {watermarkText && (
+                <div 
+                    className="absolute inset-0 z-30" 
+                    onContextMenu={(e) => e.preventDefault()}
+                />
+            )}
         </div>
 
         {/* Bottom Perforations */}
@@ -123,13 +226,30 @@ export default function FramedImage({
   // Vintage: Torn paper / Old photo look
   if (frameStyle === 'vintage') {
     return (
-      <div className={`p-4 bg-[#f4e4bc] shadow-lg ${className}`} style={{ clipPath: 'polygon(2% 2%, 98% 1%, 100% 98%, 1% 100%)' }}>
-        <div className="border border-[#d4c49c] p-1 h-full">
+      <div className={`p-4 bg-[#f4e4bc] shadow-lg relative ${className}`} style={{ clipPath: 'polygon(2% 2%, 98% 1%, 100% 98%, 1% 100%)' }}>
+        <div className="border border-[#d4c49c] p-1 h-full relative">
             <img 
                 src={src} 
                 alt={alt} 
                 className={`w-full h-full object-cover sepia-[.3] contrast-125 ${imageClassName}`} 
             />
+             {/* Watermark Overlay */}
+            {watermarkText && (
+                <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                    <div className="transform -rotate-45 whitespace-nowrap text-black font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay opacity-20">
+                        {Array(6).fill(watermarkText).map((text, i) => (
+                            <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {/* Ghost Layer */}
+            {watermarkText && (
+                <div 
+                    className="absolute inset-0 z-30" 
+                    onContextMenu={(e) => e.preventDefault()}
+                />
+            )}
         </div>
       </div>
     );
@@ -138,14 +258,31 @@ export default function FramedImage({
   // Gold Luxury: Double gold border
   if (frameStyle === 'gold') {
     return (
-      <div className={`p-3 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#b38728] shadow-xl ${className}`}>
+      <div className={`p-3 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#b38728] shadow-xl relative ${className}`}>
         <div className="bg-black p-1 h-full">
-             <div className="border border-[#bf953f] p-1 h-full">
+             <div className="border border-[#bf953f] p-1 h-full relative">
                 <img 
                     src={src} 
                     alt={alt} 
                     className={`w-full h-full object-cover ${imageClassName}`} 
                 />
+                 {/* Watermark Overlay */}
+                {watermarkText && (
+                    <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                        <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                            {Array(6).fill(watermarkText).map((text, i) => (
+                                <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {/* Ghost Layer */}
+                {watermarkText && (
+                    <div 
+                        className="absolute inset-0 z-30" 
+                        onContextMenu={(e) => e.preventDefault()}
+                    />
+                )}
              </div>
         </div>
       </div>
@@ -155,13 +292,30 @@ export default function FramedImage({
   // Neon: Glowing border
   if (frameStyle === 'neon') {
     return (
-      <div className={`p-1 bg-black shadow-[0_0_10px_#0ff,0_0_20px_#0ff] rounded-lg ${className}`}>
-        <div className="border-2 border-[#0ff] rounded-lg overflow-hidden h-full">
+      <div className={`p-1 bg-black shadow-[0_0_10px_#0ff,0_0_20px_#0ff] rounded-lg relative ${className}`}>
+        <div className="border-2 border-[#0ff] rounded-lg overflow-hidden h-full relative">
             <img 
                 src={src} 
                 alt={alt} 
                 className={`w-full h-full object-cover ${imageClassName}`} 
             />
+             {/* Watermark Overlay */}
+            {watermarkText && (
+                <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                    <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                        {Array(6).fill(watermarkText).map((text, i) => (
+                            <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {/* Ghost Layer */}
+            {watermarkText && (
+                <div 
+                    className="absolute inset-0 z-30" 
+                    onContextMenu={(e) => e.preventDefault()}
+                />
+            )}
         </div>
       </div>
     );
@@ -187,10 +341,48 @@ export default function FramedImage({
                 alt={alt} 
                 className={`w-full h-full object-cover ${imageClassName}`} 
             />
+             {/* Watermark Overlay */}
+            {watermarkText && (
+                <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                    <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                        {Array(6).fill(watermarkText).map((text, i) => (
+                            <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {/* Ghost Layer */}
+            {watermarkText && (
+                <div 
+                    className="absolute inset-0 z-30" 
+                    onContextMenu={(e) => e.preventDefault()}
+                />
+            )}
         </div>
       </div>
     );
   }
 
-  return <img src={src} alt={alt} className={className} />;
+  return (
+    <div className={`relative ${className}`}>
+        <img src={src} alt={alt} className={imageClassName || className} />
+         {/* Watermark Overlay */}
+         {watermarkText && (
+            <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
+                <div className="transform -rotate-45 whitespace-nowrap text-white font-bold text-xl sm:text-3xl tracking-widest mix-blend-overlay">
+                    {Array(6).fill(watermarkText).map((text, i) => (
+                        <span key={i} className="block my-16">{text} &nbsp;&nbsp;&nbsp; {text}</span>
+                    ))}
+                </div>
+            </div>
+        )}
+        {/* Ghost Layer */}
+        {watermarkText && (
+            <div 
+                className="absolute inset-0 z-30" 
+                onContextMenu={(e) => e.preventDefault()}
+            />
+        )}
+    </div>
+  );
 }

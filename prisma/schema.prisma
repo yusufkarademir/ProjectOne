@@ -38,6 +38,7 @@ model Event {
   // Photo Hunt (Game) Features
   isGameEnabled       Boolean  @default(false)
   isAiModerationEnabled Boolean @default(true)
+  isWatermarkEnabled Boolean @default(false) // New field for watermark protection
   missions            Mission[]
 
   createdAt   DateTime @default(now())

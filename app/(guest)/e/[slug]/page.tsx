@@ -22,6 +22,8 @@ export default async function EventPage({
 
   const themeConfig = (event.themeConfig as any) || {};
   const theme = themeConfig.theme || 'modern';
+  const frameStyle = themeConfig.frame || 'none';
+  const watermarkText = (event as any).isWatermarkEnabled ? event.name : null;
 
   // Render the appropriate template based on the theme selection
   switch (theme) {
@@ -29,21 +31,21 @@ export default async function EventPage({
       return (
         <>
           <WeddingTemplate event={event} />
-          <FaceFinder slug={event.slug} />
+          <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
         </>
       );
     case 'corporate':
       return (
         <>
           <CorporateTemplate event={event} />
-          <FaceFinder slug={event.slug} />
+          <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
         </>
       );
     case 'party':
       return (
         <>
           <PartyTemplate event={event} />
-          <FaceFinder slug={event.slug} />
+          <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
         </>
       );
     case 'modern':
@@ -51,7 +53,7 @@ export default async function EventPage({
       return (
         <>
           <ModernTemplate event={event} />
-          <FaceFinder slug={event.slug} />
+          <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
         </>
       );
   }

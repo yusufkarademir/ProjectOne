@@ -1,32 +1,27 @@
 # Oturum Devir Teslim Notları
 
-## ✅ Tamamlananlar (v0.3.3)
+## ✅ Tamamlananlar (v0.6.1)
 - **Güvenlik & Gizlilik:**
-  - Misafir erişim kontrolü.
-  - İndirme kısıtlamaları ve sağ tık koruması.
-- **Moderasyon Sistemi:**
-  - Onay bekleyenler havuzu.
-  - Otomatik yenileme (Auto-refresh) ile anlık moderasyon arayüzü.
-- **Yükleme Sistemi:**
-  - Sıralı yükleme (Sequential upload) ile "Unexpected end of form" hatası çözüldü.
-  - 500MB video yükleme desteği.
-  - İlerleme çubuğu ve detaylı hata yönetimi.
-- **Fotoğraf Avı (Gamification):**
-  - Görev oluşturma ve yönetimi.
-  - Misafir oyun arayüzü ve ilerleme takibi.
-  - Tüm temalara entegrasyon.
+  - **Filigran (Watermark) Koruması:** Etkinlik ayarlarından açılıp kapatılabilen, fotoğraflar üzerine silik yazı ekleyen sistem.
+  - **Yapay Zeka (AI) Moderasyonu:** +18 içeriklerin tarayıcı tabanlı engellenmesi.
+  - Misafir erişim kontrolü ve indirme kısıtlamaları.
+- **Oyunlaştırma (Photo Hunt):**
+  - Görev oluşturma, yönetme ve misafir arayüzü tamamlandı.
+- **Altyapı:**
+  - Prisma şeması güncellendi (`isWatermarkEnabled`, `isAiModerationEnabled`).
+  - Veritabanı migrasyonları tamamlandı.
 
 ## 🎯 Bir Sonraki Oturum Hedefi: Test ve İyileştirme
-Özellik geliştirimi tamamlandı. Şimdi detaylı testler ve kullanıcı deneyimi iyileştirmelerine odaklanılacak.
+Sistem özellikleri büyük ölçüde tamamlandı. Artık stabilite ve kullanıcı deneyimine odaklanılmalı.
 
 ### Yapılacaklar Listesi:
 1.  **Kapsamlı Test:**
-    - Farklı cihazlarda (Mobil/Desktop) oyun deneyimi testi.
-    - Moderasyon ile oyun entegrasyonunun (onaylanan fotoğraflar) kontrolü.
+    - Watermark özelliğinin farklı cihazlarda ve ekran boyutlarında testi.
+    - AI moderasyonunun hassasiyet testleri.
 2.  **UI/UX İyileştirmeleri:**
-    - Oyun bitiş ekranının zenginleştirilmesi.
-    - Görev ikonlarının özelleştirilmesi (opsiyonel).
+    - Mobil görünümde detaylı kontroller.
+    - Oyun bitiş ekranı animasyonları.
 
 ### Notlar:
-- Kullanıcı moderasyon sisteminin otomatik yenilenmesinden çok memnun kaldı.
-- Yükleme sistemi artık çok daha stabil (tek tek yükleme mantığı sayesinde).
+- Prisma `generate` işlemi yapıldı, veritabanı senkronize.
+- Proje `v0.6.1` sürümüne yükseltildi.

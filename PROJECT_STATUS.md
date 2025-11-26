@@ -1,6 +1,6 @@
 # Proje Durumu ve İlerleme Raporu
 
-## 📅 Son Güncelleme: 25 Kasım 2024
+## 📅 Son Güncelleme: 26 Kasım 2024
 
 Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve gelecek planlarını takip etmek için oluşturulmuştur.
 
@@ -66,6 +66,7 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
     - Misafir galerisi erişimini açma/kapama.
     - İndirme iznini yönetme.
     - Sağ tık koruması (İndirme kapalıysa).
+    - **Filigran (Watermark) Koruması:** Fotoğrafların üzerine etkinlik adını silik şekilde yazar ve ekran görüntüsü almayı zorlaştırır.
 - [x] **Moderasyon Sistemi:**
     - "Moderasyon Modu" ile yüklenen fotoğrafları onaya düşürme.
     - Dashboard'da "Onay Bekleyenler" paneli.
@@ -115,3 +116,4 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
 - [x] *Upload "Unexpected end of form" hatası:* Form `encType="multipart/form-data"` eklenerek ve server action iyileştirilerek çözüldü.
 - [x] *Galeri Silme Butonu:* Organizer görünümünde eksik olan silme butonu eklendi.
 - [x] *Karışık Medya Yükleme:* Fotoğraf ve video karışık yüklendiğinde oluşan sorunlar giderildi.
+- [x] *Prisma Senkronizasyonu:* Veritabanı şeması güncellendi ve istemci yeniden oluşturuldu.
