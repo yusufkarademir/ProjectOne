@@ -1,4 +1,5 @@
 'use server';
+// Force rebuild
 
 import { auth } from '../../auth';
 import { prisma } from '../../lib/db';
@@ -261,19 +262,16 @@ export async function updateEventPrivacySettings(eventId: string, privacyConfig:
     }
 
     // Extract top-level fields
-    const { isAiModerationEnabled, isWatermarkEnabled, ...restPrivacyConfig } = privacyConfig;
+    const { isAiModerationEnabled, isWatermarkEnabled, isPasswordProtected, guestPin, ...restPrivacyConfig } = privacyConfig;
 
     const updateData: any = {
       privacyConfig: restPrivacyConfig,
     };
 
-    if (typeof isAiModerationEnabled !== 'undefined') {
-      updateData.isAiModerationEnabled = isAiModerationEnabled;
-    }
-
-    if (typeof isWatermarkEnabled !== 'undefined') {
-      updateData.isWatermarkEnabled = isWatermarkEnabled;
-    }
+    if (typeof isAiModerationEnabled !== 'undefined') updateData.isAiModerationEnabled = isAiModerationEnabled;
+    if (typeof isWatermarkEnabled !== 'undefined') updateData.isWatermarkEnabled = isWatermarkEnabled;
+    if (typeof isPasswordProtected !== 'undefined') updateData.isPasswordProtected = isPasswordProtected;
+    if (typeof guestPin !== 'undefined') updateData.guestPin = guestPin;
 
     await prisma.event.update({
       where: { id: eventId },
@@ -285,5 +283,39 @@ export async function updateEventPrivacySettings(eventId: string, privacyConfig:
   } catch (error) {
     console.error('Update privacy settings error:', error);
     return { success: false, message: `Güncelleme hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}` };
+  }
+}
+
+export async function verifyGuestPin(slug: string, pin: string) {
+  try {
+    const event = await prisma.event.findUnique({
+      where: { slug },
+      select: { id: true, guestPin: true, isPasswordProtected: true }
+    });
+
+    if (!event) {
+      return { success: false, message: 'Etkinlik bulunamadı.' };
+    }
+
+    if (!event.isPasswordProtected) {
+      return { success: true, message: 'Şifre koruması yok.' };
+    }
+
+    if (event.guestPin === pin) {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      cookieStore.set(`event_access_${event.id}`, 'true', { 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24, // 1 day
+        path: '/',
+      });
+      return { success: true, message: 'Giriş başarılı.' };
+    } else {
+      return { success: false, message: 'Hatalı PIN.' };
+    }
+  } catch (error) {
+    console.error('Verify PIN error:', error);
+    return { success: false, message: 'Doğrulama hatası.' };
   }
 }

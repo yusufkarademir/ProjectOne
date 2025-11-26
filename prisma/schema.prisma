@@ -39,6 +39,8 @@ model Event {
   isGameEnabled       Boolean  @default(false)
   isAiModerationEnabled Boolean @default(true)
   isWatermarkEnabled Boolean @default(false) // New field for watermark protection
+  isPasswordProtected Boolean @default(false) // New field for guest password protection
+  guestPin      String?  // 4-6 digit PIN for guest access
   missions            Mission[]
 
   createdAt   DateTime @default(now())
