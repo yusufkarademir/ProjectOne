@@ -248,8 +248,7 @@ export default function UploadForm({ eventId, slug, isAiModerationEnabled = true
           type="file" 
           name="file" 
           accept="image/*,video/*" 
-          multiple
-          required 
+          multiple 
           disabled={isUploading || isChecking || isModelLoading}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
           onChange={handleFileChange}
