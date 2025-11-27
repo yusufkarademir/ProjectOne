@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, ChevronLeft, ChevronRight, Download, Grid, List, CheckSquare, Square, Trash2, Share2 } from 'lucide-react';
 import JSZip from 'jszip';
@@ -34,8 +34,38 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const openLightbox = (index: number) => setSelectedIndex(index);
+  const openLightbox = (index: number) => {
+    setSelectedIndex(index);
+    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+  };
   const closeLightbox = () => setSelectedIndex(null);
+
+  // Swipe Logic
+  const touchStart = useRef<number | null>(null);
+  const touchEnd = useRef<number | null>(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchEnd.current = null;
+    touchStart.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    touchEnd.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart.current || !touchEnd.current) return;
+    const distance = touchStart.current - touchEnd.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      showNext();
+    } else if (isRightSwipe) {
+      showPrev();
+    }
+  };
 
   const showNext = () => {
     if (selectedIndex !== null) {
@@ -80,6 +110,7 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
       
       // Track download
       incrementDownloadCount(photo.id);
+      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
 
       const filename = `photo-${photo.id}.jpg`;
       const proxyUrl = getProxyUrl(photo.url, filename, true);
@@ -133,6 +164,7 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
 
   const handleDelete = async () => {
       if (selectedIds.size === 0) return;
+      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
       if (!confirm(`${selectedIds.size} fotoğrafı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`)) return;
 
       const loadingToast = toast.loading('Siliniyor...');
@@ -345,7 +377,13 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
             <ChevronLeft size={32} />
           </button>
 
-          <div className="relative w-full h-full flex flex-col items-center justify-center" onClick={closeLightbox}>
+          <div 
+            className="relative w-full h-full flex flex-col items-center justify-center" 
+            onClick={closeLightbox}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
              {photos[selectedIndex].type === 'video' ? (
                  <video 
                     src={photos[selectedIndex].url} 
@@ -380,23 +418,25 @@ export default function GalleryGrid({ photos, eventSlug, canDelete = true, frame
                         <span>İndir</span>
                     </button>
                 )}
-                <button 
-                    className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full font-medium hover:bg-white/20 transition-all hover:scale-105 active:scale-95"
-                    onClick={() => {
-                        if (navigator.share) {
-                            navigator.share({
-                                title: 'Etkinlik Fotoğrafı',
-                                url: photos[selectedIndex].url
-                            });
-                        } else {
-                            navigator.clipboard.writeText(photos[selectedIndex].url);
-                            alert('Link kopyalandı!');
-                        }
-                    }}
-                >
-                    <Share2 size={20} />
-                    <span>Paylaş</span>
-                </button>
+                {allowDownload && (
+                    <button 
+                        className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full font-medium hover:bg-white/20 transition-all hover:scale-105 active:scale-95"
+                        onClick={() => {
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: 'Etkinlik Fotoğrafı',
+                                    url: photos[selectedIndex].url
+                                });
+                            } else {
+                                navigator.clipboard.writeText(photos[selectedIndex].url);
+                                alert('Link kopyalandı!');
+                            }
+                        }}
+                    >
+                        <Share2 size={20} />
+                        <span>Paylaş</span>
+                    </button>
+                )}
              </div>
              <div className="absolute top-6 left-6 text-white/80 text-sm font-medium bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm">
                 {selectedIndex + 1} / {photos.length}

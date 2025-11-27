@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { uploadPhotos } from '../../../../lib/upload-action';
-import { Upload, FileImage, FileVideo, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Upload, FileImage, FileVideo, CheckCircle, AlertCircle, Loader2, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import * as nsfwjs from 'nsfwjs';
@@ -16,6 +16,13 @@ export default function UploadForm({ eventId, slug, isAiModerationEnabled = true
   const [model, setModel] = useState<nsfwjs.NSFWJS | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [isModelLoading, setIsModelLoading] = useState(true);
+  
+  // Haptic feedback helper
+  const vibrate = (ms: number) => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(ms);
+    }
+  };
   // Load NSFW model
   // Load NSFW model
   useEffect(() => {
@@ -208,6 +215,7 @@ export default function UploadForm({ eventId, slug, isAiModerationEnabled = true
     if (successCount > 0) {
         if (failCount === 0) {
             toast.success('Tüm dosyalar başarıyla yüklendi!');
+            vibrate(200);
         } else {
             toast.success(`${successCount} dosya yüklendi, ${failCount} dosya başarısız.`);
         }
@@ -220,6 +228,21 @@ export default function UploadForm({ eventId, slug, isAiModerationEnabled = true
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       
+      <div className="flex gap-4 mb-4">
+        <label className="flex-1 bg-purple-600 text-white py-3.5 rounded-xl font-semibold hover:bg-purple-700 transition-all shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <Camera size={20} />
+            <span>Fotoğraf Çek</span>
+            <input 
+                type="file" 
+                accept="image/*" 
+                capture="environment"
+                className="hidden"
+                onChange={handleFileChange}
+                disabled={isUploading || isChecking || isModelLoading}
+            />
+        </label>
+      </div>
+
       <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
         <input 
           type="file" 

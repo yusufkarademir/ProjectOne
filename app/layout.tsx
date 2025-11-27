@@ -6,6 +6,18 @@ import { Providers } from './providers';
 export const metadata: Metadata = {
   title: "EtkinlikQR",
   description: "Etkinlik fotoğraflarınızı QR kod ile kolayca paylaşın",
+  manifest: "/manifest.json",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "EtkinlikQR",
+  },
 };
 
 export default function RootLayout({
