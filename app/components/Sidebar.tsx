@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, PlusCircle, LogOut, Settings, Image as ImageIcon, ChevronRight, Calendar, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, LogOut, Settings, Image as ImageIcon, ChevronRight, Calendar, User as UserIcon, X } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
 interface SidebarProps {
@@ -16,6 +16,8 @@ interface SidebarProps {
     name: string;
     slug: string;
   }>;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const menuItems = [
@@ -36,20 +38,41 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar({ user, recentEvents = [] }: SidebarProps) {
+export default function Sidebar({ user, recentEvents = [], isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-72 bg-slate-900 text-white flex flex-col h-screen fixed left-0 top-0 z-50 shadow-xl">
-      {/* Brand */}
-      <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-        <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <span className="font-bold text-lg">E</span>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+            onClick={onClose}
+        />
+      )}
+
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-white flex flex-col shadow-xl transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+      `}>
+        {/* Brand */}
+        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <span className="font-bold text-lg">E</span>
+                </div>
+                <h1 className="text-xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                    EtkinlikQR
+                </h1>
+            </div>
+            {/* Mobile Close Button */}
+            <button 
+                onClick={onClose}
+                className="md:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            >
+                <X size={20} />
+            </button>
         </div>
-        <h1 className="text-xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-            EtkinlikQR
-        </h1>
-      </div>
 
       {/* User Profile - Compact */}
       <div className="px-4 py-6 bg-slate-800/30">
@@ -78,6 +101,7 @@ export default function Sidebar({ user, recentEvents = [] }: SidebarProps) {
                 <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => onClose?.()}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
                     isActive 
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' 
@@ -103,6 +127,7 @@ export default function Sidebar({ user, recentEvents = [] }: SidebarProps) {
                     <Link
                         key={event.id}
                         href={`/events/${event.id}`}
+                        onClick={() => onClose?.()}
                         className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group ${
                              pathname.includes(event.id)
                                 ? 'bg-slate-800 text-white border border-slate-700'
@@ -115,6 +140,7 @@ export default function Sidebar({ user, recentEvents = [] }: SidebarProps) {
                 ))}
                 <Link 
                     href="/events/create"
+                    onClick={() => onClose?.()}
                     className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors mt-2 group"
                 >
                     <PlusCircle size={14} className="group-hover:scale-110 transition-transform" />
@@ -133,6 +159,7 @@ export default function Sidebar({ user, recentEvents = [] }: SidebarProps) {
           Çıkış Yap
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

@@ -19,6 +19,13 @@ export default function ModerationGallery({ photos: initialPhotos, eventSlug }: 
   const [processing, setProcessing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Haptic feedback helper
+  const vibrate = (ms: number) => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(ms);
+    }
+  };
+
   // Auto-refresh every 5 seconds
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -53,6 +60,7 @@ export default function ModerationGallery({ photos: initialPhotos, eventSlug }: 
     setProcessing(true);
     const result = await approvePhotos(ids, eventSlug);
     if (result.success) {
+      vibrate(50);
       toast.success(result.message);
       // Optimistic update
       setPhotos(prev => prev.filter(p => !ids.includes(p.id)));
@@ -69,6 +77,7 @@ export default function ModerationGallery({ photos: initialPhotos, eventSlug }: 
     setProcessing(true);
     const result = await deletePhotos(ids, eventSlug);
     if (result.success) {
+      vibrate(50);
       toast.success('Fotoğraflar reddedildi ve silindi.');
       // Optimistic update
       setPhotos(prev => prev.filter(p => !ids.includes(p.id)));
@@ -170,9 +179,9 @@ export default function ModerationGallery({ photos: initialPhotos, eventSlug }: 
                <img src={photo.url} alt="" className="w-full h-full object-cover" />
             )}
             
-            <div className={`absolute inset-0 bg-black/20 transition-opacity ${selectedIds.has(photo.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+            <div className={`absolute inset-0 bg-black/20 transition-opacity ${selectedIds.has(photo.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 md:opacity-0 opacity-100'}`} />
             
-            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-2 right-2 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                <button
                  onClick={(e) => { e.stopPropagation(); handleReject([photo.id]); }}
                  className="p-1.5 bg-white text-red-600 rounded-full hover:bg-red-50 shadow-sm"

@@ -1,4 +1,4 @@
-import Sidebar from '../components/Sidebar';
+import DashboardLayoutClient from './layout-client';
 import { auth } from '../../auth';
 import { prisma } from '../../lib/db';
 
@@ -65,13 +65,8 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar user={user || undefined} recentEvents={recentEvents} />
-      <main className="ml-72 p-8 transition-all duration-300">
-        <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {children}
-        </div>
-      </main>
-    </div>
+    <DashboardLayoutClient user={user || undefined} recentEvents={recentEvents}>
+      {children}
+    </DashboardLayoutClient>
   );
 }
