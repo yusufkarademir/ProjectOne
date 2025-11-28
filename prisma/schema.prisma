@@ -46,6 +46,9 @@ model Event {
   viewCount     Int      @default(0) // Analytics: Total views
   missions            Mission[]
 
+  // Social Wall Features
+  socialSettings      Json?    // { enabled: boolean, features: { comments: boolean, ratings: boolean, reactions: boolean, tags: boolean }, availableTags: string[] }
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -64,6 +67,13 @@ model Photo {
   missionId   String?
   mission     Mission? @relation(fields: [missionId], references: [id])
 
+  // Social Wall Data
+  isPinned    Boolean  @default(false)
+  rating      Float    @default(0)
+  tags        String[] // Array of tags
+  comments    Comment[]
+  reactions   Reaction[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -79,4 +89,28 @@ model Mission {
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Social Wall Models
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  photoId   String
+  photo     Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  authorId  String?  // Anonymous user ID (device/cookie based)
+  status    String   @default("approved") // approved, pending, rejected
+  
+  createdAt DateTime @default(now())
+}
+
+model Reaction {
+  id        String   @id @default(cuid())
+  type      String   // emoji code or name
+  photoId   String
+  photo     Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  authorId  String?  // Anonymous user ID
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([photoId, authorId, type]) // One reaction of each type per user per photo
 }

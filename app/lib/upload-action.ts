@@ -34,7 +34,10 @@ export async function uploadPhotos(prevState: any, formData: FormData) {
     };
 
     const privacyConfig = (event.privacyConfig as any) || {};
-    const requireModeration = privacyConfig.requireModeration === true;
+    const socialSettings = ((event as any).socialSettings as any) || {};
+    
+    // Require moderation if either privacy config OR social settings require it
+    const requireModeration = privacyConfig.requireModeration === true || socialSettings.requireApproval === true;
     const initialStatus = requireModeration ? 'pending' : 'approved';
 
     console.log('Upload config:', { config, requireModeration, initialStatus });

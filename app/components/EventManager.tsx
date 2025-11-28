@@ -1,18 +1,16 @@
 'use client';
 
-
-
 import { useState } from 'react';
 import GeneralSettings from './event-settings/GeneralSettings';
 import ScheduleSettings from './event-settings/ScheduleSettings';
 import AnnouncementSettings from './event-settings/AnnouncementSettings';
 import ThemeSettings from './event-settings/ThemeSettings';
-// import QRCustomizer from './QRCustomizer'; // Deprecated
 import QRCodeStudio from './QRCodeStudio';
 import PrivacySettings from './event-settings/PrivacySettings';
 import PhotoHuntSettings from './event-settings/PhotoHuntSettings';
 import AnalyticsTab from './event-settings/AnalyticsTab';
-import { Calendar, Layout, Megaphone, Palette, QrCode, Image as ImageIcon, Tv, Shield, Trophy, BarChart3 } from 'lucide-react';
+import SocialTab from './event-settings/SocialTab';
+import { Calendar, Layout, Megaphone, Palette, QrCode, Image as ImageIcon, Tv, Shield, Trophy, BarChart3, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
 const TABS = [
@@ -21,6 +19,7 @@ const TABS = [
   { id: 'announcements', label: 'Duyurular', icon: Megaphone },
   { id: 'theme', label: 'Görünüm & Tema', icon: Palette },
   { id: 'qr', label: 'QR Kod', icon: QrCode },
+  { id: 'social', label: 'Sosyal Duvar', icon: MessageSquare },
   { id: 'privacy', label: 'Güvenlik & Gizlilik', icon: Shield },
   { id: 'photo-hunt', label: 'Fotoğraf Avı', icon: Trophy },
   { id: 'analytics', label: 'Analitik', icon: BarChart3 },
@@ -75,7 +74,16 @@ export default function EventManager({ event }: { event: any }) {
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors"
             >
                 <Tv size={18} />
-                Canlı Vitrin (Live)
+                Canlı Vitrin (Klasik)
+            </Link>
+
+            <Link
+                href={`/e/${event.slug}/social-live`}
+                target="_blank"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-purple-600 hover:bg-purple-50 transition-colors"
+            >
+                <Tv size={18} />
+                Sosyal Vitrin (Yeni)
             </Link>
           </nav>
         </div>
@@ -94,6 +102,7 @@ export default function EventManager({ event }: { event: any }) {
                 {activeTab === 'announcements' && 'Misafirlerinize iletmek istediğiniz duyuruları buradan ekleyebilirsiniz.'}
                 {activeTab === 'theme' && 'Karşılama sayfasının (Vitrin) görünümünü buradan özelleştirebilirsiniz.'}
                 {activeTab === 'qr' && 'Etkinliğinize özel QR kodunu buradan tasarlayabilir ve indirebilirsiniz.'}
+                {activeTab === 'social' && 'Sosyal duvar özelliklerini ve ayarlarını buradan yönetebilirsiniz.'}
                 {activeTab === 'privacy' && 'Etkinliğinizin gizlilik ve güvenlik ayarlarını buradan yönetebilirsiniz.'}
                 {activeTab === 'photo-hunt' && 'Misafirleriniz için eğlenceli fotoğraf görevleri oluşturun.'}
                 {activeTab === 'analytics' && 'Etkinliğinizin performansını ve istatistiklerini buradan takip edebilirsiniz.'}
@@ -125,6 +134,7 @@ export default function EventManager({ event }: { event: any }) {
                     </div>
                 </div>
             )}
+            {activeTab === 'social' && <SocialTab event={event} />}
             {activeTab === 'privacy' && <PrivacySettings event={event} />}
             {activeTab === 'photo-hunt' && <PhotoHuntSettings event={event} />}
             {activeTab === 'analytics' && <AnalyticsTab event={event} />}

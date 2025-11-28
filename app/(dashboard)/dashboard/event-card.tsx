@@ -207,22 +207,38 @@ export default function EventCard({ event }: { event: Event }) {
                         <ExternalLink size={12} />
                         Misafir Linkleri
                     </p>
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                         <Link 
                             href={`/e/${event.slug}`}
                             target="_blank"
-                            className="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-700 py-2 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
+                            className="flex items-center justify-center gap-2 bg-blue-50 text-blue-700 py-2 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
                         >
                             <Eye size={14} />
                             <span>Misafir Sayfası</span>
                         </Link>
                         <Link 
+                            href={`/e/${event.slug}/social`}
+                            target="_blank"
+                            className="flex items-center justify-center gap-2 bg-green-50 text-green-700 py-2 rounded-lg text-xs font-medium hover:bg-green-100 transition-colors"
+                        >
+                            <Eye size={14} />
+                            <span>Sosyal Duvar</span>
+                        </Link>
+                        <Link 
                             href={`/e/${event.slug}/live`}
                             target="_blank"
-                            className="flex-1 flex items-center justify-center gap-2 bg-purple-50 text-purple-700 py-2 rounded-lg text-xs font-medium hover:bg-purple-100 transition-colors"
+                            className="flex items-center justify-center gap-2 bg-purple-50 text-purple-700 py-2 rounded-lg text-xs font-medium hover:bg-purple-100 transition-colors"
                         >
                             <Play size={14} />
-                            <span>Canlı Vitrin</span>
+                            <span>Canlı (Klasik)</span>
+                        </Link>
+                        <Link 
+                            href={`/e/${event.slug}/social-live`}
+                            target="_blank"
+                            className="flex items-center justify-center gap-2 bg-pink-50 text-pink-700 py-2 rounded-lg text-xs font-medium hover:bg-pink-100 transition-colors"
+                        >
+                            <Play size={14} />
+                            <span>Canlı (Sosyal)</span>
                         </Link>
                     </div>
                 </div>
@@ -268,6 +284,7 @@ export default function EventCard({ event }: { event: Event }) {
         isOpen={qrStudioOpen}
         onClose={() => setQrStudioOpen(false)}
         url={eventLink}
+        socialUrl={origin ? `${origin}/e/${event.slug}/social` : ''}
         eventName={event.name}
         eventId={event.id}
         initialConfig={(event.themeConfig as any)?.qr}

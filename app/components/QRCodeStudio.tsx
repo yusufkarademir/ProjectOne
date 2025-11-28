@@ -16,6 +16,7 @@ interface QRCodeStudioProps {
   isOpen: boolean;
   onClose: () => void;
   url: string;
+  socialUrl?: string; // New prop for social wall URL
   eventName: string;
   eventId: string;
   initialConfig?: any;
@@ -36,11 +37,15 @@ const cornerTypes: { label: string; value: CornerSquareType }[] = [
   { label: 'Nokta', value: 'dot' },
 ];
 
-export default function QRCodeStudio({ isOpen, onClose, url, eventName, eventId, initialConfig }: QRCodeStudioProps) {
+export default function QRCodeStudio({ isOpen, onClose, url, socialUrl, eventName, eventId, initialConfig }: QRCodeStudioProps) {
   const qrCode = useRef<QRCodeStyling | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<'style' | 'color' | 'logo' | 'table-card'>('style');
   const [isSaving, setIsSaving] = useState(false);
+
+  // QR Type State
+  const [qrType, setQrType] = useState<'main' | 'social'>('main');
+  const activeUrl = qrType === 'main' ? url : (socialUrl || url);
 
   // Customization State
   const [dotType, setDotType] = useState<DotType>(initialConfig?.dotType || 'rounded');
@@ -101,7 +106,7 @@ export default function QRCodeStudio({ isOpen, onClose, url, eventName, eventId,
             width: 300,
             height: 300,
             type: 'svg',
-            data: url,
+            data: activeUrl,
             image: logo,
             dotsOptions: {
                 color: color,
@@ -141,7 +146,7 @@ export default function QRCodeStudio({ isOpen, onClose, url, eventName, eventId,
   useEffect(() => {
     if (!qrCode.current) return;
     qrCode.current.update({
-      data: url,
+      data: activeUrl,
       image: logo,
       dotsOptions: {
         color: gradient ? undefined : color,
@@ -161,7 +166,7 @@ export default function QRCodeStudio({ isOpen, onClose, url, eventName, eventId,
         gradient: gradient as any,
       }
     });
-  }, [url, logo, color, bgColor, dotType, cornerType, isOpen, gradient]);
+  }, [activeUrl, logo, color, bgColor, dotType, cornerType, isOpen, gradient]);
 
   const handleDownload = (ext: 'png' | 'svg' | 'pdf') => {
     if (!qrCode.current) return;
@@ -309,6 +314,27 @@ export default function QRCodeStudio({ isOpen, onClose, url, eventName, eventId,
 
             <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 transform hover:scale-105 transition-transform duration-500 relative group">
                 <div ref={containerRef} className="qr-code-container" />
+                
+                {/* QR Type Switcher */}
+                {socialUrl && (
+                    <div className="absolute top-4 left-0 right-0 flex justify-center">
+                        <div className="bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-sm border border-gray-200 flex text-xs font-medium">
+                            <button 
+                                onClick={() => setQrType('main')}
+                                className={`px-3 py-1.5 rounded-full transition-colors ${qrType === 'main' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-900'}`}
+                            >
+                                Ana Sayfa
+                            </button>
+                            <button 
+                                onClick={() => setQrType('social')}
+                                className={`px-3 py-1.5 rounded-full transition-colors ${qrType === 'social' ? 'bg-green-600 text-white' : 'text-gray-500 hover:text-green-600'}`}
+                            >
+                                Sosyal Duvar
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Save Indicator */}
                 <div className="absolute -bottom-12 left-0 right-0 flex justify-center">
                     <button 
