@@ -31,16 +31,7 @@ export default function CreateEventPage() {
           <label className="block text-sm font-medium text-gray-700">Tarih</label>
           <input type="date" name="date" required className="mt-1 block w-full border border-gray-300 rounded p-2" />
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Etkinlik URL (Slug)</label>
-          <div className="flex">
-            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-              etkinlikqr.net/e/
-            </span>
-            <input type="text" name="slug" required pattern="[a-z0-9-]+" className="mt-1 block w-full border border-gray-300 rounded-r-md p-2" placeholder="ahmet-ayse-dugun" />
-          </div>
-          <p className="text-xs text-gray-500 mt-1">Sadece küçük harf, rakam ve tire kullanın.</p>
-        </div>
+        {/* Slug input removed - auto generated */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700">Tema</label>
           <select 

@@ -1,4 +1,26 @@
-# Proje Durumu ve İlerleme Raporu
+## 📂 Proje Yapısı ve Dosya Konumları
+
+Proje kök dizinini temiz tutmak amacıyla bazı dosyalar ilgili klasörlere taşınmıştır:
+
+- **`/docs`**: Proje dokümantasyonu, kullanım kılavuzları ve notlar.
+  - `AI_KULLANIM_KILAVUZU.md`: Yapay zeka özellikleri hakkında bilgi.
+  - `SESSION_HANDOFF.md`: Oturum devir notları.
+- **`/scripts`**: Kurulum ve bakım scriptleri.
+  - `check-users.js`: Kullanıcı kontrolü.
+  - `download-models.js`: AI modellerini indirme.
+  - `seed-user.ts`: Örnek kullanıcı oluşturma.
+- **`/public/models`**: Yüz tanıma ve AI modelleri (Silinmemeli).
+- **`/app`**: Ana uygulama kodları.
+
+## 🚀 Son Durum
+Proje şu anda aktif geliştirme aşamasındadır. Temel özellikler (Etkinlik oluşturma, QR kod, Galeri, Analitik) çalışmaktadır.
+
+### Son Yapılan İyileştirmeler
+1. **Etkinlik Kartı**: Silme butonu görünürlüğü düzeltildi.
+2. **Analitik**: Saat dilimi Türkiye saati (UTC+3) olarak ayarlandı.
+3. **URL Yapısı**: Otomatik ve benzersiz slug oluşturma eklendi.
+4. **QR Stüdyo**: Mobil uyumluluk sağlandı.
+ ve İlerleme Raporu
 
 ## 📅 Son Güncelleme: 28 Kasım 2024 (v0.7.0)
 

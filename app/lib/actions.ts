@@ -15,7 +15,7 @@ const RegisterSchema = z.object({
 const CreateEventSchema = z.object({
   name: z.string().min(1),
   date: z.string(),
-  slug: z.string().min(3).regex(/^[a-z0-9-]+$/),
+  // slug is auto-generated
   theme: z.string(),
 });
 
@@ -85,20 +85,51 @@ export async function createEvent(prevState: any, formData: FormData) {
     return { message: 'Invalid fields', errors: validatedFields.error.flatten().fieldErrors };
   }
 
-  const { name, date, slug, theme } = validatedFields.data;
+  const { name, date, theme } = validatedFields.data;
 
   try {
     const user = await prisma.user.findUnique({ where: { email: session.user.email } });
     if (!user) throw new Error('User not found');
 
+    // Generate slug from name
+    let baseSlug = name
+      .toLowerCase()
+      .replace(/ğ/g, 'g')
+      .replace(/ü/g, 'u')
+      .replace(/ş/g, 's')
+      .replace(/ı/g, 'i')
+      .replace(/ö/g, 'o')
+      .replace(/ç/g, 'c')
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    if (baseSlug.length < 3) baseSlug = `event-${Date.now()}`;
+
+    let uniqueSlug = baseSlug;
+    let counter = 1;
+
+    // Check for uniqueness
+    while (true) {
+      const existingEvent = await prisma.event.findUnique({
+        where: { slug: uniqueSlug },
+        select: { id: true }
+      });
+
+      if (!existingEvent) break;
+
+      uniqueSlug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
     await prisma.event.create({
       data: {
         name,
         date: new Date(date),
-        slug,
+        slug: uniqueSlug,
         themeConfig: { theme },
         organizerId: user.id,
-        qrCodeUrl: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/e/${slug}`,
+        qrCodeUrl: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/e/${uniqueSlug}`,
       },
     });
   } catch (error) {

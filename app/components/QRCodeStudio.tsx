@@ -290,7 +290,7 @@ export default function QRCodeStudio({ isOpen, onClose, url, eventName, eventId,
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl w-full max-w-4xl h-[85vh] flex overflow-hidden shadow-2xl relative">
+      <div className="bg-white rounded-2xl w-full max-w-4xl min-h-[85vh] md:h-[85vh] h-auto flex flex-col md:flex-row overflow-hidden shadow-2xl relative">
         
         {/* Close Button */}
         <button 
@@ -301,7 +301,7 @@ export default function QRCodeStudio({ isOpen, onClose, url, eventName, eventId,
         </button>
 
         {/* Left: Preview Area */}
-        <div className="w-full md:w-1/2 bg-gray-50 flex flex-col items-center justify-center p-8 border-r border-gray-100 relative">
+        <div className="w-full md:w-1/2 bg-gray-50 flex flex-col items-center justify-center p-8 border-b md:border-b-0 md:border-r border-gray-100 relative">
             <div className="absolute top-6 left-6">
                 <h2 className="text-2xl font-bold text-gray-800">QR Stüdyosu <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full ml-2">v2.0</span></h2>
                 <p className="text-gray-500 text-sm">Etkinliğin için mükemmel kodu tasarla.</p>

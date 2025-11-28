@@ -230,14 +230,14 @@ export default function EventCard({ event }: { event: Event }) {
 
             {/* Footer Actions */}
             <div className="bg-gray-50 p-2 border-t border-gray-100 flex items-center justify-between gap-1">
-                <div className="flex-1 px-2">
-                    <div className="flex items-center gap-2 text-xs text-gray-500 bg-white border border-gray-200 rounded px-2 py-1">
+                <div className="flex-1 px-2 min-w-0">
+                    <div className="flex items-center gap-2 text-xs text-gray-500 bg-white border border-gray-200 rounded px-2 py-1 w-full">
                         <span className="truncate flex-1">{eventLink}</span>
-                        <button onClick={handleCopyLink} className="hover:text-blue-600"><Copy size={12} /></button>
+                        <button onClick={handleCopyLink} className="hover:text-blue-600 flex-shrink-0"><Copy size={12} /></button>
                     </div>
                 </div>
                 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                         onClick={handleDuplicate}
                         className="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-500 hover:text-gray-900"

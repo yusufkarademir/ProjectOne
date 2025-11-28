@@ -80,7 +80,8 @@ export async function getEventAnalytics(eventId: string) {
     // Calculate hourly upload activity
     const uploadsByHour = new Array(24).fill(0);
     event.photos.forEach(photo => {
-      const hour = new Date(photo.createdAt).getHours();
+      // Convert to Turkey Time (UTC+3)
+      const hour = (new Date(photo.createdAt).getUTCHours() + 3) % 24;
       uploadsByHour[hour]++;
     });
 
