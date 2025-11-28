@@ -22,14 +22,9 @@ interface SidebarProps {
 
 const menuItems = [
   {
-    title: 'Genel Bakış',
+    title: 'Etkinliklerim',
     href: '/dashboard',
     icon: LayoutDashboard,
-  },
-  {
-    title: 'Şablon Yöneticisi',
-    href: '/templates',
-    icon: ImageIcon,
   },
   {
     title: 'Ayarlar',
@@ -94,6 +89,17 @@ export default function Sidebar({ user, recentEvents = [], isOpen = false, onClo
       <nav className="flex-1 px-4 space-y-6 overflow-y-auto py-4 custom-scrollbar">
         {/* Main Menu */}
         <div className="space-y-1">
+            <div className="px-4 mb-4">
+                <Link 
+                    href="/templates"
+                    onClick={() => onClose?.()}
+                    className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition-all shadow-lg shadow-blue-900/20 group"
+                >
+                    <PlusCircle size={20} className="group-hover:scale-110 transition-transform" />
+                    <span>Yeni Etkinlik Oluştur</span>
+                </Link>
+            </div>
+
             <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Menü</p>
             {menuItems.map((item) => {
             const isActive = pathname === item.href;
@@ -139,7 +145,7 @@ export default function Sidebar({ user, recentEvents = [], isOpen = false, onClo
                     </Link>
                 ))}
                 <Link 
-                    href="/events/create"
+                    href="/templates"
                     onClick={() => onClose?.()}
                     className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors mt-2 group"
                 >

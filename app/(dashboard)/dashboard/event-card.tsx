@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, ImageIcon, QrCode, Edit, Trash2, Copy, Download, ExternalLink, MoreVertical, Play, Eye } from 'lucide-react';
+import { Calendar, ImageIcon, QrCode, Edit, Trash2, Copy, Download, ExternalLink, MoreVertical, Play, Eye, Settings, Shield } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { deleteEvent, duplicateEvent } from '../../lib/event-actions';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import QRCodeStudio from '../../components/QRCodeStudio';
 
 interface Event {
   id: string;
@@ -63,6 +64,7 @@ function DeleteModal({ isOpen, onClose, onConfirm, eventName }: DeleteModalProps
 export default function EventCard({ event }: { event: Event }) {
   const router = useRouter();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [qrStudioOpen, setQrStudioOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [origin, setOrigin] = useState('');
 
@@ -134,8 +136,11 @@ export default function EventCard({ event }: { event: Event }) {
             </div>
 
             {/* Card Header / QR Code Area */}
-            <div className="h-48 bg-gradient-to-br from-slate-50 to-slate-100 relative overflow-hidden group-hover:from-blue-50 group-hover:to-indigo-50 transition-colors flex items-center justify-center p-6">
-                <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 transform group-hover:scale-105 transition-transform duration-300">
+            <div 
+                className="h-48 bg-gradient-to-br from-slate-50 to-slate-100 relative overflow-hidden group-hover:from-blue-50 group-hover:to-indigo-50 transition-colors flex items-center justify-center p-6 cursor-pointer"
+                onClick={() => setQrStudioOpen(true)}
+            >
+                <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 transform group-hover:scale-105 transition-transform duration-300 relative">
                     {origin && (
                         <QRCodeSVG 
                             value={eventLink} 
@@ -144,9 +149,14 @@ export default function EventCard({ event }: { event: Event }) {
                             className="opacity-90 group-hover:opacity-100 transition-opacity"
                         />
                     )}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                        <span className="bg-white/90 text-gray-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                            Özelleştir
+                        </span>
+                    </div>
                 </div>
                 
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white/80 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white/80 to-transparent pointer-events-none">
                      <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-1">{event.name}</h3>
                      <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
                         <Calendar size={12} />
@@ -157,20 +167,6 @@ export default function EventCard({ event }: { event: Event }) {
 
             {/* Card Body */}
             <div className="p-4 flex-1 flex flex-col">
-                {/* Link Display */}
-                <div className="mb-4 p-2 bg-gray-50 rounded-lg border border-gray-100 flex items-center gap-2 group/link">
-                    <div className="flex-1 text-xs text-gray-500 truncate font-mono">
-                        {eventLink || 'Yükleniyor...'}
-                    </div>
-                    <button 
-                        onClick={handleCopyLink}
-                        className="p-1.5 hover:bg-white rounded-md text-gray-400 hover:text-blue-600 transition-colors shadow-sm opacity-0 group-hover/link:opacity-100"
-                        title="Kopyala"
-                    >
-                        <Copy size={14} />
-                    </button>
-                </div>
-
                 {/* Stats */}
                 <div className="flex items-center gap-4 mb-6">
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium">
@@ -179,66 +175,83 @@ export default function EventCard({ event }: { event: Event }) {
                     </div>
                 </div>
 
-                {/* Main Action Button */}
-                <div className="mt-auto">
-                    <Link 
-                        href={`/events/${event.id}`}
-                        className="w-full bg-gray-900 text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors shadow-lg shadow-gray-200 hover:shadow-blue-200"
-                    >
-                        <Edit size={18} />
-                        <span>Etkinliği Yönet</span>
-                    </Link>
+                {/* Admin Actions Area */}
+                <div className="space-y-3 mb-6">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                        <Shield size={12} />
+                        Yönetici Paneli
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Link 
+                            href={`/events/${event.id}`}
+                            className="flex items-center justify-center gap-2 bg-gray-900 text-white py-2.5 rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors"
+                        >
+                            <Edit size={14} />
+                            <span>Düzenle</span>
+                        </Link>
+                        <Link 
+                            href={`/events/${event.id}/gallery`}
+                            className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 py-2.5 rounded-lg font-medium text-sm hover:bg-gray-50 transition-colors"
+                        >
+                            <ImageIcon size={14} />
+                            <span>Galeri</span>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Public Links Area */}
+                <div className="mt-auto pt-4 border-t border-gray-100">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                        <ExternalLink size={12} />
+                        Misafir Linkleri
+                    </p>
+                    <div className="flex gap-2">
+                        <Link 
+                            href={`/e/${event.slug}`}
+                            target="_blank"
+                            className="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-700 py-2 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
+                        >
+                            <Eye size={14} />
+                            <span>Misafir Sayfası</span>
+                        </Link>
+                        <Link 
+                            href={`/e/${event.slug}/live`}
+                            target="_blank"
+                            className="flex-1 flex items-center justify-center gap-2 bg-purple-50 text-purple-700 py-2 rounded-lg text-xs font-medium hover:bg-purple-100 transition-colors"
+                        >
+                            <Play size={14} />
+                            <span>Canlı Vitrin</span>
+                        </Link>
+                    </div>
                 </div>
             </div>
 
-            {/* Quick Actions Toolbar */}
+            {/* Footer Actions */}
             <div className="bg-gray-50 p-2 border-t border-gray-100 flex items-center justify-between gap-1">
-                <Link 
-                    href={`/e/${event.slug}`}
-                    target="_blank"
-                    className="flex-1 flex flex-col items-center justify-center gap-1 p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-xs font-medium text-gray-600 hover:text-blue-600"
-                    title="Misafir Sayfası"
-                >
-                    <ExternalLink size={16} />
-                    <span>Sayfa</span>
-                </Link>
+                <div className="flex-1 px-2">
+                    <div className="flex items-center gap-2 text-xs text-gray-500 bg-white border border-gray-200 rounded px-2 py-1">
+                        <span className="truncate flex-1">{eventLink}</span>
+                        <button onClick={handleCopyLink} className="hover:text-blue-600"><Copy size={12} /></button>
+                    </div>
+                </div>
                 
-                <Link 
-                    href={`/events/${event.id}/gallery`}
-                    className="flex-1 flex flex-col items-center justify-center gap-1 p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-xs font-medium text-gray-600 hover:text-green-600"
-                    title="Galeri Yönetimi"
-                >
-                    <ImageIcon size={16} />
-                    <span>Galeri</span>
-                </Link>
-
-                <Link 
-                    href={`/e/${event.slug}/live`}
-                    target="_blank"
-                    className="flex-1 flex flex-col items-center justify-center gap-1 p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-xs font-medium text-gray-600 hover:text-purple-600"
-                    title="Canlı Vitrin"
-                >
-                    <Play size={16} />
-                    <span>Live</span>
-                </Link>
-
-                <div className="w-px h-8 bg-gray-200 mx-1"></div>
-
-                <button
-                    onClick={handleDuplicate}
-                    className="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-500 hover:text-gray-900"
-                    title="Kopyala"
-                >
-                    <MoreVertical size={16} />
-                </button>
-                
-                <button
-                    onClick={() => setDeleteModalOpen(true)}
-                    className="p-2 rounded-lg hover:bg-red-50 hover:shadow-sm transition-all text-gray-400 hover:text-red-600"
-                    title="Sil"
-                >
-                    <Trash2 size={16} />
-                </button>
+                <div className="flex items-center gap-1">
+                    <button
+                        onClick={handleDuplicate}
+                        className="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-500 hover:text-gray-900"
+                        title="Kopyala"
+                    >
+                        <MoreVertical size={16} />
+                    </button>
+                    
+                    <button
+                        onClick={() => setDeleteModalOpen(true)}
+                        className="p-2 rounded-lg hover:bg-red-50 hover:shadow-sm transition-all text-gray-400 hover:text-red-600"
+                        title="Sil"
+                    >
+                        <Trash2 size={16} />
+                    </button>
+                </div>
             </div>
       </div>
 
@@ -246,6 +259,13 @@ export default function EventCard({ event }: { event: Event }) {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDelete}
+        eventName={event.name}
+      />
+
+      <QRCodeStudio 
+        isOpen={qrStudioOpen}
+        onClose={() => setQrStudioOpen(false)}
+        url={eventLink}
         eventName={event.name}
       />
     </>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LayoutTemplate, ArrowRight, Check, Star } from 'lucide-react';
+import { LayoutTemplate, ArrowRight, Check, Star, PlusCircle } from 'lucide-react';
 
 const templates = [
   {
@@ -41,13 +41,13 @@ export default function TemplatesPage() {
     <div>
       <div className="mb-10 text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center justify-center p-3 bg-blue-50 text-blue-600 rounded-2xl mb-4">
-            <LayoutTemplate size={32} />
+            <PlusCircle size={32} />
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Şablon Yöneticisi
+            Yeni Etkinlik Oluştur
         </h1>
         <p className="text-lg text-gray-500">
-            Etkinliğinizin ruhunu yansıtacak profesyonel tasarımları keşfedin. Tek tıkla uygulayın ve özelleştirin.
+            Başlamak için etkinliğinizin ruhuna en uygun tasarımı seçin.
         </p>
       </div>
 
