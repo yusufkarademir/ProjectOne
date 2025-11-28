@@ -8,6 +8,7 @@ import { deleteEvent, duplicateEvent } from '../../lib/event-actions';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import QRCodeStudio from '../../components/QRCodeStudio';
+import CustomQRCode from '../../components/CustomQRCode';
 
 interface Event {
   id: string;
@@ -17,6 +18,7 @@ interface Event {
   _count: {
     photos: number;
   };
+  themeConfig?: any;
 }
 
 interface DeleteModalProps {
@@ -142,10 +144,10 @@ export default function EventCard({ event }: { event: Event }) {
             >
                 <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 transform group-hover:scale-105 transition-transform duration-300 relative">
                     {origin && (
-                        <QRCodeSVG 
-                            value={eventLink} 
+                        <CustomQRCode 
+                            url={eventLink} 
+                            config={(event.themeConfig as any)?.qr}
                             size={120}
-                            level="M"
                             className="opacity-90 group-hover:opacity-100 transition-opacity"
                         />
                     )}
@@ -267,6 +269,8 @@ export default function EventCard({ event }: { event: Event }) {
         onClose={() => setQrStudioOpen(false)}
         url={eventLink}
         eventName={event.name}
+        eventId={event.id}
+        initialConfig={(event.themeConfig as any)?.qr}
       />
     </>
   );

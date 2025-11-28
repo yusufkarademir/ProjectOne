@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '500mb', // Increase limit for video uploads
+      bodySizeLimit: '500mb', // Increase limit for video uploads and QR logos
     },
   },
 
@@ -23,4 +23,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default nextConfig as any;

@@ -1,6 +1,6 @@
 # Proje Durumu ve İlerleme Raporu
 
-## 📅 Son Güncelleme: 27 Kasım 2024 (v0.6.5)
+## 📅 Son Güncelleme: 28 Kasım 2024 (v0.7.0)
 
 Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve gelecek planlarını takip etmek için oluşturulmuştur.
 
@@ -105,6 +105,21 @@ Bu dosya, **EtkinlikQR** projesinin mevcut durumunu, tamamlanan özellikleri ve 
     - Veritabanı şeması güncellemesi (`User` tablosuna `name` ve `image` eklendi).
 - [x] **React 19 Uyumluluğu:**
     - `useFormState` -> `useActionState` geçişi yapıldı.
+
+### 12. QR Stüdyosu ve Masa Kartı (v0.7.0)
+- [x] **Gelişmiş QR Stüdyosu:**
+    - Renk, şekil (nokta/köşe) ve logo özelleştirme.
+    - Hazır renk paletleri ve gradient (renk geçişi) desteği.
+    - Ayarların veritabanında kalıcı olarak saklanması.
+- [x] **Masa Kartı (Table Card):**
+    - Etkinlik masaları için otomatik PDF oluşturma.
+    - A5 formatında, etkinlik adı ve QR kod içeren hazır tasarım.
+- [x] **Paylaşım:**
+    - Web Share API ile mobil cihazlarda hızlı paylaşım.
+    - Masaüstünde tek tıkla link kopyalama.
+- [x] **Altyapı İyileştirmeleri:**
+    - Server Action body size limiti artırıldı (10MB -> 500MB).
+    - QR kod oluşturma motoru `qr-code-styling` ile güncellendi.
 
 ## 🚧 Devam Eden / İyileştirilmesi Gerekenler
 - [ ] **Mobil Uyumluluk Testleri:** Farklı cihazlarda detaylı testler.

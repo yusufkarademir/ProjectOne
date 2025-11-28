@@ -1,13 +1,14 @@
 'use client';
 
-'use client';
+
 
 import { useState } from 'react';
 import GeneralSettings from './event-settings/GeneralSettings';
 import ScheduleSettings from './event-settings/ScheduleSettings';
 import AnnouncementSettings from './event-settings/AnnouncementSettings';
 import ThemeSettings from './event-settings/ThemeSettings';
-import QRCustomizer from './QRCustomizer';
+// import QRCustomizer from './QRCustomizer'; // Deprecated
+import QRCodeStudio from './QRCodeStudio';
 import PrivacySettings from './event-settings/PrivacySettings';
 import PhotoHuntSettings from './event-settings/PhotoHuntSettings';
 import AnalyticsTab from './event-settings/AnalyticsTab';
@@ -27,6 +28,9 @@ const TABS = [
 
 export default function EventManager({ event }: { event: any }) {
   const [activeTab, setActiveTab] = useState('general');
+  const [qrStudioOpen, setQrStudioOpen] = useState(false);
+  
+  const eventLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/e/${event.slug}`;
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -103,11 +107,22 @@ export default function EventManager({ event }: { event: any }) {
             {activeTab === 'theme' && <ThemeSettings event={event} />}
             {activeTab === 'qr' && (
                 <div className="max-w-xl">
-                    <QRCustomizer 
-                        eventId={event.id} 
-                        qrCodeUrl={event.qrCodeUrl || ''} 
-                        initialSettings={(event.themeConfig as any)?.qr} 
-                    />
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-center">
+                        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <QrCode size={32} />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Etkinlik QR Kodunu Tasarla</h3>
+                        <p className="text-gray-600 mb-6">
+                            QR kodunuzun rengini, şeklini ve logosunu özelleştirerek etkinliğinize özel hale getirin.
+                        </p>
+                        <button 
+                            onClick={() => setQrStudioOpen(true)}
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium shadow-lg shadow-blue-900/20"
+                        >
+                            <Palette size={18} />
+                            QR Stüdyosunu Aç
+                        </button>
+                    </div>
                 </div>
             )}
             {activeTab === 'privacy' && <PrivacySettings event={event} />}
@@ -116,6 +131,14 @@ export default function EventManager({ event }: { event: any }) {
           </div>
         </div>
       </div>
+      <QRCodeStudio 
+        isOpen={qrStudioOpen}
+        onClose={() => setQrStudioOpen(false)}
+        url={eventLink}
+        eventName={event.name}
+        eventId={event.id}
+        initialConfig={(event.themeConfig as any)?.qr}
+      />
     </div>
   );
 }
