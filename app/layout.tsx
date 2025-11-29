@@ -1,18 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import { Providers } from './providers';
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export const metadata: Metadata = {
   title: "EtkinlikQR",
   description: "Etkinlik fotoğraflarınızı QR kod ile kolayca paylaşın",
   manifest: "/manifest.json",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
