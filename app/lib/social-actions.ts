@@ -223,19 +223,21 @@ export async function approveComment(commentId: string) {
 
     await (prisma as any).comment.update({
       where: { id: commentId },
-      data: { status: 'approved' }
+      data: { 
+        status: 'approved',
+        createdAt: new Date() // Update creation time to now so it appears as new in the feed
+      }
     });
 
     revalidatePath(`/e/${comment.photo.event.slug}/social`);
     return { success: true, message: 'Comment approved' };
   } catch (error) {
+    console.error('Approve comment error:', error);
     return { success: false, message: 'Failed to approve comment' };
   }
 }
 
 export async function rejectComment(commentId: string) {
-  // Rejecting is basically deleting or marking as rejected. Let's mark as rejected to keep record?
-  // Or just delete. For now, let's delete to keep it simple and clean.
   return deleteComment(commentId);
 }
 
@@ -310,11 +312,13 @@ export async function approvePhoto(photoId: string) {
 
     await prisma.photo.update({
       where: { id: photoId },
-      data: { status: 'approved' }
+      data: { 
+        status: 'approved',
+        updatedAt: new Date() // Force update timestamp
+      }
     });
 
     revalidatePath(`/e/${photo.event.slug}/social`);
-    revalidatePath(`/e/${photo.event.slug}/gallery`);
     return { success: true, message: 'Photo approved' };
   } catch (error) {
     return { success: false, message: 'Failed to approve photo' };
@@ -338,20 +342,17 @@ export async function rejectPhoto(photoId: string) {
       return { success: false, message: 'Unauthorized' };
     }
 
-    // Deleting the photo for rejection
-    await prisma.photo.delete({
-      where: { id: photoId }
+    await prisma.photo.update({
+      where: { id: photoId },
+      data: { status: 'rejected' }
     });
 
     revalidatePath(`/e/${photo.event.slug}/social`);
-    revalidatePath(`/e/${photo.event.slug}/gallery`);
     return { success: true, message: 'Photo rejected' };
   } catch (error) {
     return { success: false, message: 'Failed to reject photo' };
   }
 }
-
-// --- Reactions ---
 
 export async function toggleReaction(photoId: string, type: string, anonId: string) {
   try {
@@ -491,28 +492,33 @@ export async function getSocialFeed(slug: string, after?: string) {
 
     const since = after ? new Date(after) : new Date(Date.now() - 1000 * 60 * 30); // Default last 30 mins
 
-    // 1. Get new photos
+    // 1. Get new/updated photos (Approved ones)
+    // We check updatedAt to catch newly approved photos even if they were uploaded earlier
     const photos = await prisma.photo.findMany({
       where: {
         eventId: event.id,
         status: 'approved',
-        createdAt: { gt: since }
+        OR: [
+            { createdAt: { gt: since } },
+            { updatedAt: { gt: since } }
+        ]
       },
       select: {
         id: true,
         url: true,
         createdAt: true,
+        updatedAt: true,
         mission: { select: { text: true } }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { updatedAt: 'desc' }
     });
 
-    // 2. Get new comments
+    // 2. Get new/updated comments
     const comments = await (prisma as any).comment.findMany({
       where: {
         photo: { eventId: event.id },
-        createdAt: { gt: since },
-        status: 'approved' // Only approved comments
+        status: 'approved',
+        createdAt: { gt: since }
       },
       include: {
         photo: { select: { url: true } }
@@ -520,7 +526,7 @@ export async function getSocialFeed(slug: string, after?: string) {
       orderBy: { createdAt: 'desc' }
     });
 
-    // 3. Get new reactions
+    // 3. Get new reactions (Reactions usually don't have approval, so createdAt is fine)
     const reactions = await (prisma as any).reaction.findMany({
       where: {
         photo: { eventId: event.id },
@@ -532,12 +538,12 @@ export async function getSocialFeed(slug: string, after?: string) {
       orderBy: { createdAt: 'desc' }
     });
 
-    // Combine and sort
+    // Combine and sort by the relevant timestamp (updatedAt for approved items, createdAt for reactions)
     const feed = [
-      ...photos.map(p => ({ type: 'photo', data: p, createdAt: p.createdAt })),
-      ...comments.map((c: any) => ({ type: 'comment', data: c, createdAt: c.createdAt })),
-      ...reactions.map((r: any) => ({ type: 'reaction', data: r, createdAt: r.createdAt }))
-    ].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      ...photos.map(p => ({ type: 'photo', data: p, timestamp: p.updatedAt || p.createdAt })),
+      ...comments.map((c: any) => ({ type: 'comment', data: c, timestamp: c.createdAt })),
+      ...reactions.map((r: any) => ({ type: 'reaction', data: r, timestamp: r.createdAt }))
+    ].sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     return { success: true, feed, panicMode: false };
   } catch (error) {
@@ -574,5 +580,47 @@ export async function resetSocialData(eventId: string) {
   } catch (error) {
     console.error('Reset data error:', error);
     return { success: false, message: 'Failed to reset data' };
+  }
+}
+
+export async function getSocialStats(slug: string) {
+  try {
+    const event = await prisma.event.findUnique({
+      where: { slug },
+      select: { id: true }
+    });
+
+    if (!event) return { success: false };
+
+    const [photoCount, commentCount, reactionCount, topPhotos] = await Promise.all([
+      prisma.photo.count({ where: { eventId: event.id, status: 'approved' } }),
+      (prisma as any).comment.count({ where: { photo: { eventId: event.id }, status: 'approved' } }),
+      (prisma as any).reaction.count({ where: { photo: { eventId: event.id } } }),
+      prisma.photo.findMany({
+        where: { eventId: event.id, status: 'approved' },
+        orderBy: { reactions: { _count: 'desc' } },
+        take: 1,
+        select: {
+          id: true,
+          url: true,
+          _count: {
+            select: { reactions: true }
+          }
+        }
+      })
+    ]);
+
+    return {
+      success: true,
+      stats: {
+        photos: photoCount,
+        comments: commentCount,
+        reactions: reactionCount,
+        topPhoto: topPhotos[0] || null
+      }
+    };
+  } catch (error) {
+    console.error('Get stats error:', error);
+    return { success: false };
   }
 }

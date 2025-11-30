@@ -79,6 +79,18 @@ export default function WeddingTemplate({ event }: TemplateProps) {
                         Fotoğraf Avı'na Başla
                     </Link>
                 )}
+                
+                {/* Social Wall Button */}
+                {((event.socialSettings as any)?.enabled) && (
+                    <Link
+                        href={`/e/${event.slug}/social`}
+                        className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-8 py-4 rounded-full font-medium tracking-wide hover:from-pink-500 hover:to-rose-500 transition-all shadow-lg shadow-pink-400/20 flex items-center justify-center gap-3"
+                    >
+                        <Images size={20} />
+                        Sosyal Duvar'a Katıl
+                    </Link>
+                )}
+
                 <Link
                     href={`/e/${event.slug}/upload`}
                     className="bg-[#d4af37] text-white px-8 py-4 rounded-full font-medium tracking-wide hover:bg-[#c5a028] transition-all shadow-lg shadow-[#d4af37]/20 flex items-center justify-center gap-3"

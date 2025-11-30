@@ -150,14 +150,16 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
                     className="h-full flex items-center"
                 >
                     {rowPhotos.map((photo) => (
-                        <div key={photo.id} className={`mx-2 ${imageHeightClass} w-auto aspect-[4/3] relative group flex-shrink-0`}>
+                        <div key={photo.id} className={`mx-2 ${imageHeightClass} w-auto relative group flex-shrink-0`}>
                             <FramedImage 
                                 src={photo.url} 
                                 alt="Slide" 
                                 frameStyle={frameStyle}
-                                className="h-full w-full shadow-lg"
-                                imageClassName="h-full w-full object-cover rounded-md"
+                                className="h-full w-auto shadow-lg"
+                                imageClassName="h-full w-auto rounded-md"
                                 flexibleFrame={true}
+                                objectFit="contain"
+                                imageLayout="responsive"
                             />
                             {photo.mission && (
                                 <div className="absolute bottom-2 left-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] py-1 px-2 rounded text-center truncate">
@@ -216,11 +218,12 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
                                         spotlightBatch.length === 2 ? 'max-h-[60vh] w-auto' :
                                         spotlightBatch.length <= 4 ? 'max-h-[45vh] w-auto' : ''
                                     }`}
-                                    imageClassName={`object-contain rounded-lg ${
+                                    imageClassName={`rounded-lg ${
                                         spotlightBatch.length === 1 ? 'max-h-[80vh]' :
                                         spotlightBatch.length === 2 ? 'max-h-[60vh]' :
                                         'max-h-[45vh]'
                                     }`}
+                                    objectFit="contain"
                                 />
                                 {photo.mission && (
                                     <div className="absolute bottom-4 left-0 right-0 text-center">

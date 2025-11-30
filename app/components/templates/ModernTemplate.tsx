@@ -71,6 +71,18 @@ export default function ModernTemplate({ event }: TemplateProps) {
                   <span>Fotoğraf Avı'na Başla!</span>
                 </Link>
               )}
+
+              {/* Social Wall Button */}
+              {((event.socialSettings as any)?.enabled) && (
+                <Link
+                  href={`/e/${event.slug}/social`}
+                  className="group flex items-center justify-center gap-3 w-full font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600"
+                >
+                  <Megaphone className="w-6 h-6" />
+                  <span>Sosyal Duvar'a Katıl</span>
+                </Link>
+              )}
+
               <Link
                 href={`/e/${event.slug}/upload`}
                 className="group flex items-center justify-center gap-3 w-full font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg bg-blue-600 text-white hover:bg-blue-700"

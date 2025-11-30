@@ -1,6 +1,6 @@
-# Proje Durumu: Etkinlik QR & Sosyal Duvar (v1.2.0)
+# Proje Durumu: Etkinlik QR & Sosyal Duvar (v1.2.1)
 
-## 📅 Son Güncelleme: 29 Kasım 2025
+## 📅 Son Güncelleme: 01 Aralık 2025
 
 ## 🚀 Genel Bakış
 Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar ve moderasyon özelliklerini içeren kapsamlı bir platform haline gelmiştir. Tüm temel özellikler tamamlanmış, test edilmiş ve kullanıma hazırdır.
@@ -20,6 +20,7 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 
 ### 3. Sosyal Duvar (Live)
 - **Netflix Tarzı Vitrin:** `/live` rotasında akan fotoğraf slayt gösterisi.
+- **Gelişmiş Görünüm (v1.2.1):** Yatay ve dikey fotoğraflar için optimize edilmiş, boşluksuz ve kesilmesiz akıllı yerleşim.
 - **Canlı Etkileşim:** Anlık gelen yorumlar ve beğeniler.
 - **Animasyonlar:** Yeni içerik geldiğinde dinamik geçişler.
 

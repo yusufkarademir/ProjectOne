@@ -8,6 +8,8 @@ interface FramedImageProps {
   frameStyle?: 'none' | 'polaroid' | 'gradient' | 'minimal' | 'corners' | 'cinema' | 'vintage' | 'gold' | 'neon' | 'floral';
   watermarkText?: string | null;
   flexibleFrame?: boolean;
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  imageLayout?: 'fill' | 'responsive';
 }
 
 export default function FramedImage({ 
@@ -17,15 +19,20 @@ export default function FramedImage({
   imageClassName = '', 
   frameStyle = 'none',
   watermarkText = null,
-  flexibleFrame = false
+  flexibleFrame = false,
+  objectFit = 'cover',
+  imageLayout = 'fill'
 }: FramedImageProps) {
+  const fitClass = `object-${objectFit}`;
+  const widthClass = imageLayout === 'responsive' ? 'w-auto' : 'w-full';
+
   if (frameStyle === 'none') {
     return (
       <div className={`relative ${className}`}>
         <img 
             src={src} 
             alt={alt} 
-            className={`w-full h-full object-cover ${imageClassName}`} 
+            className={`${widthClass} h-full ${fitClass} ${imageClassName}`} 
         />
         {/* Watermark Overlay */}
         {watermarkText && (
@@ -56,7 +63,7 @@ export default function FramedImage({
             <img 
                 src={src} 
                 alt={alt} 
-                className={`w-full h-full object-cover ${imageClassName}`} 
+                className={`${widthClass} h-full ${fitClass} ${imageClassName}`} 
             />
              {/* Watermark Overlay */}
             {watermarkText && (
@@ -88,7 +95,7 @@ export default function FramedImage({
             <img 
                 src={src} 
                 alt={alt} 
-                className={`w-full h-full object-cover rounded-lg ${imageClassName}`} 
+                className={`${widthClass} h-full ${fitClass} rounded-lg ${imageClassName}`} 
             />
              {/* Watermark Overlay */}
             {watermarkText && (
@@ -119,7 +126,7 @@ export default function FramedImage({
         <img 
             src={src} 
             alt={alt} 
-            className={`w-full h-full object-cover ${imageClassName}`} 
+            className={`${widthClass} h-full ${fitClass} ${imageClassName}`} 
         />
          {/* Watermark Overlay */}
          {watermarkText && (
@@ -155,7 +162,7 @@ export default function FramedImage({
             <img 
                 src={src} 
                 alt={alt} 
-                className={`w-full h-full object-cover ${imageClassName}`} 
+                className={`${widthClass} h-full ${fitClass} ${imageClassName}`} 
             />
              {/* Watermark Overlay */}
             {watermarkText && (
@@ -194,7 +201,7 @@ export default function FramedImage({
             <img 
                 src={src} 
                 alt={alt} 
-                className={`w-full h-full object-cover ${imageClassName}`} 
+                className={`${widthClass} h-full ${fitClass} ${imageClassName}`} 
             />
              {/* Watermark Overlay */}
             {watermarkText && (
@@ -233,7 +240,7 @@ export default function FramedImage({
             <img 
                 src={src} 
                 alt={alt} 
-                className={`w-full h-full object-cover sepia-[.3] contrast-125 ${imageClassName}`} 
+                className={`${widthClass} h-full ${fitClass} sepia-[.3] contrast-125 ${imageClassName}`} 
             />
              {/* Watermark Overlay */}
             {watermarkText && (
@@ -266,7 +273,7 @@ export default function FramedImage({
                 <img 
                     src={src} 
                     alt={alt} 
-                    className={`w-full h-full object-cover ${imageClassName}`} 
+                    className={`${widthClass} h-full ${fitClass} ${imageClassName}`} 
                 />
                  {/* Watermark Overlay */}
                 {watermarkText && (
@@ -299,7 +306,7 @@ export default function FramedImage({
             <img 
                 src={src} 
                 alt={alt} 
-                className={`w-full h-full object-cover ${imageClassName}`} 
+                className={`${widthClass} h-full ${fitClass} ${imageClassName}`} 
             />
              {/* Watermark Overlay */}
             {watermarkText && (
@@ -341,7 +348,7 @@ export default function FramedImage({
             <img 
                 src={src} 
                 alt={alt} 
-                className={`w-full h-full object-cover ${imageClassName}`} 
+                className={`${widthClass} h-full ${fitClass} ${imageClassName}`} 
             />
              {/* Watermark Overlay */}
             {watermarkText && (
@@ -367,7 +374,7 @@ export default function FramedImage({
 
   return (
     <div className={`relative ${className}`}>
-        <img src={src} alt={alt} className={imageClassName || className} />
+        <img src={src} alt={alt} className={`${widthClass} h-full ${fitClass} ${imageClassName || className}`} />
          {/* Watermark Overlay */}
          {watermarkText && (
             <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden flex items-center justify-center opacity-30 select-none">
