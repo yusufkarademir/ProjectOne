@@ -19,10 +19,15 @@ export default function LoungeView({ config, eventName }: LoungeViewProps) {
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center text-white overflow-hidden">
       {/* Aurora Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900 to-slate-900">
-        <div className="absolute top-0 left-0 w-full h-full opacity-30">
-          <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] animate-spin-slow bg-gradient-to-r from-transparent via-blue-500/20 to-transparent blur-3xl" />
-          <div className="absolute bottom-[-50%] right-[-50%] w-[200%] h-[200%] animate-spin-slow-reverse bg-gradient-to-r from-transparent via-purple-500/20 to-transparent blur-3xl" />
+      {/* Elegant Royal Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-[#0f172a] to-slate-900">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.05]"></div>
+        
+        {/* Animated Ambient Light */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div className="absolute top-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[100px] animate-pulse" />
+          <div className="absolute bottom-[-10%] right-[20%] w-[40%] h-[40%] rounded-full bg-indigo-500/20 blur-[100px] animate-pulse delay-700" />
+          <div className="absolute top-[40%] left-[50%] transform -translate-x-1/2 w-[50%] h-[50%] rounded-full bg-slate-800/30 blur-[120px]" />
         </div>
       </div>
 

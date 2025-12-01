@@ -94,7 +94,7 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
       if (statsResult.success && statsResult.stats) {
         setStats(statsResult.stats);
       }
-    }, 5000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [slug]);

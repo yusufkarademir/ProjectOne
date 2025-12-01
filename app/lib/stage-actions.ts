@@ -11,7 +11,8 @@ export interface StageConfig {
   showClock?: boolean;
   showQr?: boolean;
   musicEnabled?: boolean;
-  musicType?: 'lofi' | 'upbeat' | 'custom';
+  musicType?: 'lofi' | 'upbeat' | 'jazz' | 'classical' | 'pop' | 'spotify' | 'custom';
+  spotifyUrl?: string;
   countdownDuration?: number; // in minutes
   countdownTarget?: string; // ISO date string
   videoUrl?: string;

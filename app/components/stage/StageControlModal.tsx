@@ -163,8 +163,11 @@ export default function StageControlModal({ isOpen, onClose, eventId, initialCon
                       <button
                         key={min}
                         onClick={() => {
-                            const target = new Date(Date.now() + min * 60 * 1000).toISOString();
-                            handleUpdate({ ...config, countdownDuration: min, countdownTarget: target });
+                            // Only update target if duration changed or no target exists
+                            if (config.countdownDuration !== min || !config.countdownTarget) {
+                                const target = new Date(Date.now() + min * 60 * 1000).toISOString();
+                                handleUpdate({ ...config, countdownDuration: min, countdownTarget: target });
+                            }
                         }}
                         className={`px-4 py-2 rounded-lg border ${
                             config.countdownDuration === min 
@@ -175,6 +178,26 @@ export default function StageControlModal({ isOpen, onClose, eventId, initialCon
                         {min} dk
                       </button>
                     ))}
+                    <div className="relative flex-1">
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="Manuel (dk)"
+                        value={![1, 5, 10, 15].includes(config.countdownDuration) ? config.countdownDuration : ''}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          if (val > 0 && val !== config.countdownDuration) {
+                            const target = new Date(Date.now() + val * 60 * 1000).toISOString();
+                            handleUpdate({ ...config, countdownDuration: val, countdownTarget: target });
+                          }
+                        }}
+                        className={`w-full px-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-purple-500 ${
+                          ![1, 5, 10, 15].includes(config.countdownDuration) && config.countdownDuration > 0
+                            ? 'bg-purple-50 border-purple-200 text-purple-700'
+                            : 'bg-white border-gray-200'
+                        }`}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -227,14 +250,30 @@ export default function StageControlModal({ isOpen, onClose, eventId, initialCon
                 </label>
 
                 {config.musicEnabled && (
-                  <select 
-                    value={config.musicType}
-                    onChange={(e) => handleUpdate({ ...config, musicType: e.target.value })}
-                    className="p-2 border border-gray-200 rounded-lg text-sm"
-                  >
-                    <option value="lofi">Lofi / Lounge</option>
-                    <option value="upbeat">Upbeat / Enerjik</option>
-                  </select>
+                  <div className="flex flex-col gap-2 flex-1">
+                    <select 
+                      value={config.musicType}
+                      onChange={(e) => handleUpdate({ ...config, musicType: e.target.value })}
+                      className="p-2 border border-gray-200 rounded-lg text-sm w-full"
+                    >
+                      <option value="lofi">Lofi / Lounge</option>
+                      <option value="upbeat">Upbeat / Enerjik</option>
+                      <option value="jazz">Smooth Jazz</option>
+                      <option value="classical">Klasik Müzik</option>
+                      <option value="pop">Pop & Dance</option>
+                      <option value="spotify">Spotify Playlist (Embed)</option>
+                    </select>
+
+                    {config.musicType === 'spotify' && (
+                      <input 
+                        type="text"
+                        value={config.spotifyUrl || ''}
+                        onChange={(e) => handleUpdate({ ...config, spotifyUrl: e.target.value })}
+                        placeholder="Spotify Playlist Linki..."
+                        className="p-2 border border-gray-200 rounded-lg text-sm w-full"
+                      />
+                    )}
+                  </div>
                 )}
               </div>
             </div>

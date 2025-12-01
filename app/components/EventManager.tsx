@@ -37,9 +37,9 @@ export default function EventManager({ event }: { event: any }) {
       {/* Sidebar Navigation */}
       <div className="w-full lg:w-64 flex-shrink-0">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 sticky top-8 z-10">
-          <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
+            <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
             <h2 className="font-semibold text-gray-900">Etkinlik Ayarları</h2>
-            <InfoTooltip content="Etkinliğinizin genel yapılandırmasını ve özelliklerini buradan düzenleyebilirsiniz." anchor="right" />
+            <InfoTooltip content="Etkinliğinizin genel yapılandırmasını ve özelliklerini buradan düzenleyebilirsiniz." anchor="bottom end" />
           </div>
           <nav className="p-2 space-y-1">
             {TABS.map((tab) => {
@@ -64,7 +64,7 @@ export default function EventManager({ event }: { event: any }) {
 
             <div className="px-3 py-2 mt-2 mb-1 flex items-center justify-between">
                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Yayın & Yönetim</h3>
-                <InfoTooltip content="Canlı yayın ekranlarını ve galeri içeriğini buradan yönetebilirsiniz." anchor="right" />
+                <InfoTooltip content="Canlı yayın ekranlarını ve galeri içeriğini buradan yönetebilirsiniz." anchor="bottom end" />
             </div>
 
             <Link

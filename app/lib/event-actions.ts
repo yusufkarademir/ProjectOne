@@ -23,14 +23,45 @@ export async function deleteEvent(eventId: string) {
       return { success: false, message: 'Bu etkinliği silme yetkiniz yok.' };
     }
 
-    // Delete all photos first (cascade delete should handle this, but being explicit)
+    // 1. Get all photos to delete from R2
+    const photos = await prisma.photo.findMany({
+      where: { eventId },
+      select: { url: true }
+    });
+
+    // 2. Delete photos from R2
+    const { deleteFromR2 } = await import('../../lib/storage');
+    const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || '';
+
+    for (const photo of photos) {
+      if (photo.url && photo.url.startsWith(R2_PUBLIC_URL)) {
+        const key = photo.url.replace(`${R2_PUBLIC_URL}/`, '');
+        try {
+          await deleteFromR2(key);
+        } catch (e) {
+          console.error(`Failed to delete photo from R2: ${key}`, e);
+        }
+      }
+    }
+
+    // 3. Delete cover image from R2 if exists
+    if (event.coverImage && event.coverImage.startsWith(R2_PUBLIC_URL)) {
+      const key = event.coverImage.replace(`${R2_PUBLIC_URL}/`, '');
+      try {
+        await deleteFromR2(key);
+      } catch (e) {
+        console.error(`Failed to delete cover image from R2: ${key}`, e);
+      }
+    }
+
+    // 4. Delete all photos from DB (cascade delete should handle this, but being explicit is safer)
     await prisma.photo.deleteMany({ where: { eventId } });
     
-    // Delete event
+    // 5. Delete event
     await prisma.event.delete({ where: { id: eventId } });
 
     revalidatePath('/dashboard');
-    return { success: true, message: 'Etkinlik başarıyla silindi.' };
+    return { success: true, message: 'Etkinlik ve tüm dosyalar başarıyla silindi.' };
   } catch (error) {
     console.error('Delete event error:', error);
     return { success: false, message: 'Etkinlik silinirken bir hata oluştu.' };

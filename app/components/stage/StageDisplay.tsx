@@ -16,11 +16,14 @@ export default function StageDisplay({ config, event }: StageDisplayProps) {
 
   // Handle Music
   useEffect(() => {
-    if (config?.musicEnabled && config?.musicType && audioRef.current) {
+    if (config?.musicEnabled && config?.musicType && config.musicType !== 'spotify' && audioRef.current) {
       // In a real app, these would be actual URLs
       const musicUrls: Record<string, string> = {
-        lofi: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', // Placeholder Lofi
-        upbeat: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_106f780856.mp3', // Placeholder Upbeat
+        lofi: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        upbeat: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+        jazz: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+        classical: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+        pop: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
       };
 
       const url = musicUrls[config.musicType];
@@ -42,10 +45,38 @@ export default function StageDisplay({ config, event }: StageDisplayProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-[100] bg-black"
+      className="fixed inset-0 z-[100] bg-black overflow-hidden"
     >
       {/* Audio Player (Hidden) */}
       <audio ref={audioRef} loop />
+      
+      {/* Spotify Embed (Visible for interaction) */}
+      {config?.musicEnabled && config?.musicType === 'spotify' && config?.spotifyUrl && (
+        <iframe 
+          src={config.spotifyUrl.replace('open.spotify.com', 'open.spotify.com/embed')} 
+          width="300" 
+          height="80" 
+          style={{ border: 0, overflow: 'hidden' }}
+          scrolling="no"
+          allow="encrypted-media; autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          className="fixed bottom-4 right-4 z-[200] rounded-xl shadow-2xl border border-white/10 bg-black/50 backdrop-blur-md transition-all hover:scale-105"
+        />
+      )}
+
+      {/* Autoplay Fallback Button */}
+      {config?.musicEnabled && config.musicType !== 'spotify' && (
+        <button
+          onClick={() => {
+            if (audioRef.current) {
+              audioRef.current.play();
+              // Force re-render or just rely on the play action
+            }
+          }}
+          className="fixed bottom-4 left-4 z-[200] bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium backdrop-blur-md transition-all opacity-50 hover:opacity-100"
+        >
+          🎵 Müziği Başlat
+        </button>
+      )}
 
       {/* View Switcher */}
       <div className="w-full h-full">

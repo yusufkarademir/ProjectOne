@@ -2,7 +2,7 @@
 
 import { Popover, Transition, Portal } from '@headlessui/react';
 import { HelpCircle, Info } from 'lucide-react';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 interface InfoTooltipProps {
   content: string;
@@ -11,6 +11,12 @@ interface InfoTooltipProps {
 }
 
 export default function InfoTooltip({ content, className = '', anchor = 'bottom' }: InfoTooltipProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <Popover className={`relative inline-block ${className}`}>
       {({ open }) => (
@@ -22,7 +28,7 @@ export default function InfoTooltip({ content, className = '', anchor = 'bottom'
           >
             <Info size={14} />
           </Popover.Button>
-          {typeof window !== 'undefined' && (
+          {mounted && (
             <Portal>
               <Transition
                 as={Fragment}
