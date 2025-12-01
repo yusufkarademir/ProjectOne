@@ -1,9 +1,9 @@
-# Proje Durumu: Etkinlik QR & Sosyal Duvar (v1.4.0)
+# Proje Durumu: Etkinlik QR & Sosyal Duvar (v1.4.1)
 
 ## 📅 Son Güncelleme: 02 Aralık 2025
 
 ## 🚀 Genel Bakış
-Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar, moderasyon ve **gelişmiş sahne yönetimi** özelliklerini içeren kapsamlı bir platform haline gelmiştir. **v1.4.0** güncellemesi ile Sahne Modu önemli ölçüde güçlendirilmiş, Spotify entegrasyonu eklenmiş ve altyapısal iyileştirmeler yapılmıştır.
+Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar, moderasyon ve **gelişmiş sahne yönetimi** özelliklerini içeren kapsamlı bir platform haline gelmiştir. **v1.4.1** güncellemesi ile Sahne Modu Spotify entegrasyonu güçlendirilmiş ve anasayfa görsel tasarımı yenilenmiştir.
 
 ## ✅ Tamamlanan Özellikler
 
@@ -18,6 +18,7 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 - Fotoğraf ve video yükleme
 - Galeri görüntüleme ve indirme
 - Beğeni ve yorum yapma
+- **Anasayfa Yenilemesi (v1.4.1):** Statik görseller yerine modern CSS tabanlı soyut tasarımlar (Gradient Mesh & Bento Grid) ile premium görünüm.
 
 ### 3. Sosyal Duvar (Live)
 - **Netflix Tarzı Vitrin:** `/live` rotasında akan fotoğraf slayt gösterisi.
@@ -31,7 +32,7 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 - **Sinema Modu:** YouTube video ve oynatma listesi desteği.
 - **Müzik Entegrasyonu:**
   - Genişletilmiş Müzik Kütüphanesi: Jazz, Klasik, Pop, Lofi, Upbeat.
-  - **Spotify Entegrasyonu:** Kullanıcının kendi playlist'ini ekleyebilmesi ve sağ alt köşeden kontrol edebilmesi.
+  - **Spotify Entegrasyonu (v1.4.1):** Kullanıcının kendi playlist'ini ekleyebilmesi. **Fix:** Uluslararası linkler (/intl-tr/) ve eksik protokoller için otomatik düzeltme eklendi.
   - Otomatik Oynatma Desteği: Tarayıcı engellerine karşı "Müziği Başlat" butonu.
 
 ### 5. Güvenlik ve Moderasyon

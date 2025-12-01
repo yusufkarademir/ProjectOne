@@ -53,7 +53,28 @@ export default function StageDisplay({ config, event }: StageDisplayProps) {
       {/* Spotify Embed (Visible for interaction) */}
       {config?.musicEnabled && config?.musicType === 'spotify' && config?.spotifyUrl && (
         <iframe 
-          src={config.spotifyUrl.replace('open.spotify.com', 'open.spotify.com/embed')} 
+          src={(() => {
+            try {
+              // Handle both full URLs and simple IDs (though UI enforces URL)
+              const url = config.spotifyUrl.startsWith('http') ? config.spotifyUrl : `https://${config.spotifyUrl}`;
+              const urlObj = new URL(url);
+              const pathSegments = urlObj.pathname.split('/').filter(Boolean);
+              
+              // Find the segment that is track, album, or playlist
+              const typeIndex = pathSegments.findIndex(seg => ['track', 'album', 'playlist'].includes(seg));
+              
+              if (typeIndex !== -1 && pathSegments[typeIndex + 1]) {
+                const type = pathSegments[typeIndex];
+                const id = pathSegments[typeIndex + 1];
+                return `https://open.spotify.com/embed/${type}/${id}`;
+              }
+              
+              // Fallback to simple replacement if pattern not found (legacy behavior)
+              return url.replace('open.spotify.com', 'open.spotify.com/embed');
+            } catch (e) {
+              return config.spotifyUrl;
+            }
+          })()}
           width="300" 
           height="80" 
           style={{ border: 0, overflow: 'hidden' }}
