@@ -15,7 +15,7 @@ import {
   Check,
   Monitor
 } from 'lucide-react';
-
+import InteractiveDemo from '@/app/components/landing/InteractiveDemo';
 
 export default function LandingPage() {
   return (
@@ -99,6 +99,60 @@ export default function LandingPage() {
                 <p>1000+ Etkinlikte Kullanıldı</p>
               </div>
             </motion.div>
+            
+            {/* Hero Animation */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative w-full"
+            >
+              <InteractiveDemo />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature 1: Live Wall */}
+      <section className="py-24 bg-gray-50 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div className="order-2 lg:order-1 relative">
+               {/* Abstract Live Wall Mockup */}
+               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white aspect-[4/3] p-4">
+                  <div className="grid grid-cols-3 gap-3 h-full">
+                     {/* Mockup Photos - CSS Patterns */}
+                     <div className="col-span-2 row-span-2 bg-slate-100 rounded-xl overflow-hidden relative group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 group-hover:scale-110 transition-transform duration-700" />
+                        <div className="absolute bottom-3 left-3 flex gap-1">
+                           <div className="w-6 h-6 rounded-full bg-white/50 backdrop-blur-sm" />
+                           <div className="w-20 h-2 bg-white/50 rounded-full backdrop-blur-sm mt-2" />
+                        </div>
+                     </div>
+                     <div className="bg-slate-100 rounded-xl relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-rose-500/20" />
+                     </div>
+                     <div className="bg-slate-100 rounded-xl relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20" />
+                     </div>
+                     <div className="col-span-3 bg-slate-100 rounded-xl relative overflow-hidden flex items-center justify-center">
+                        <p className="text-slate-400 font-medium text-sm">Canlı Akış Başlıyor...</p>
+                     </div>
+                  </div>
+                  
+                  {/* Floating Reaction Card */}
+                  <motion.div 
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ repeat: Infinity, duration: 3 }}
+                    className="absolute top-8 right-8 bg-white p-3 rounded-xl shadow-lg flex gap-2 z-10"
+                  >
+                    <span>❤️</span>
+                    <span>🔥</span>
+                    <span>👏</span>
+                  </motion.div>
+               </div>
+               <div className="absolute -z-10 bottom-[-10%] left-[-10%] w-full h-full bg-indigo-100 rounded-full blur-3xl opacity-50" />
+            </div>
             
             <div className="order-1 lg:order-2">
               <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6">

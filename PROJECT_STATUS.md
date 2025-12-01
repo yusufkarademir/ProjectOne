@@ -18,7 +18,7 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 - Fotoğraf ve video yükleme
 - Galeri görüntüleme ve indirme
 - Beğeni ve yorum yapma
-- **Anasayfa Yenilemesi (v1.4.1):** Statik görseller yerine modern CSS tabanlı soyut tasarımlar (Gradient Mesh & Bento Grid) ile premium görünüm.
+- **Anasayfa Yenilemesi (v1.4.1):** Statik görseller yerine **Kod Tabanlı İnteraktif Demo** (Framer Motion) ile uygulamanın çalışma mantığını gösteren canlı simülasyon.
 
 ### 3. Sosyal Duvar (Live)
 - **Netflix Tarzı Vitrin:** `/live` rotasında akan fotoğraf slayt gösterisi.
