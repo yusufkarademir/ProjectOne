@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Calendar, Image as ImageIcon, QrCode, Plus, Home, ChevronRight } from 'lucide-react';
 import DashboardFilters from './dashboard-filters';
 import EventCard from './event-card';
+import DashboardTourWrapper from './dashboard-tour-wrapper';
 
 export default async function DashboardPage({
   searchParams,
@@ -84,7 +85,7 @@ export default async function DashboardPage({
       </div>
       
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 dashboard-stats">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4 transition-transform hover:scale-105">
           <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
             <Calendar size={24} />
@@ -131,7 +132,7 @@ export default async function DashboardPage({
 
       {/* Events Grid */}
       <div className="animate-in fade-in duration-500">
-        {user.events.length === 0 ? (
+        {(user as any).events.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
                     <Calendar size={32} />
@@ -150,12 +151,14 @@ export default async function DashboardPage({
             </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {user.events.map((event: any) => (
+            {(user as any).events.map((event: any) => (
                 <EventCard key={event.id} event={event} />
             ))}
           </div>
         )}
       </div>
+      
+      <DashboardTourWrapper />
     </div>
   );
 }

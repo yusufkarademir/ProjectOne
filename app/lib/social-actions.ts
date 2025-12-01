@@ -480,14 +480,17 @@ export async function getSocialFeed(slug: string, after?: string) {
     const event = await prisma.event.findUnique({
       where: { slug },
       // @ts-ignore: Schema mismatch workaround
-      select: { id: true, socialSettings: true }
+      select: { id: true, socialSettings: true, stageConfig: true }
     });
 
     if (!event) return { success: false, feed: [] };
 
     const settings = (event as any).socialSettings as any;
-    if (settings?.panicMode) {
-      return { success: true, feed: [], panicMode: true };
+    const stageConfig = (event as any).stageConfig as any;
+    
+    // Panic mode check (Legacy support, but stageConfig takes precedence if active)
+    if (settings?.panicMode && !stageConfig?.isActive) {
+      return { success: true, feed: [], panicMode: true, stageConfig };
     }
 
     const since = after ? new Date(after) : new Date(Date.now() - 1000 * 60 * 30); // Default last 30 mins
@@ -545,7 +548,7 @@ export async function getSocialFeed(slug: string, after?: string) {
       ...reactions.map((r: any) => ({ type: 'reaction', data: r, timestamp: r.createdAt }))
     ].sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-    return { success: true, feed, panicMode: false };
+    return { success: true, feed, panicMode: false, stageConfig };
   } catch (error) {
     console.error('Get social feed error:', error);
     return { success: false, feed: [] };
@@ -592,20 +595,30 @@ export async function getSocialStats(slug: string) {
 
     if (!event) return { success: false };
 
-    const [photoCount, commentCount, reactionCount, topPhotos] = await Promise.all([
+    const [photoCount, commentCount, reactionCount, topLikedPhotos, topCommentedPhotos] = await Promise.all([
       prisma.photo.count({ where: { eventId: event.id, status: 'approved' } }),
       (prisma as any).comment.count({ where: { photo: { eventId: event.id }, status: 'approved' } }),
       (prisma as any).reaction.count({ where: { photo: { eventId: event.id } } }),
+      // Top Liked
       prisma.photo.findMany({
-        where: { eventId: event.id, status: 'approved' },
+        where: { eventId: event.id, status: 'approved', reactions: { some: {} } },
         orderBy: { reactions: { _count: 'desc' } },
         take: 1,
         select: {
           id: true,
           url: true,
-          _count: {
-            select: { reactions: true }
-          }
+          _count: { select: { reactions: true } }
+        }
+      }),
+      // Top Commented
+      prisma.photo.findMany({
+        where: { eventId: event.id, status: 'approved', comments: { some: {} } },
+        orderBy: { comments: { _count: 'desc' } },
+        take: 1,
+        select: {
+          id: true,
+          url: true,
+          _count: { select: { comments: true } }
         }
       })
     ]);
@@ -616,7 +629,8 @@ export async function getSocialStats(slug: string) {
         photos: photoCount,
         comments: commentCount,
         reactions: reactionCount,
-        topPhoto: topPhotos[0] || null
+        topLiked: topLikedPhotos[0] || null,
+        topCommented: topCommentedPhotos[0] || null
       }
     };
   } catch (error) {

@@ -20,8 +20,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function SocialLivePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function SocialLivePage({ params, searchParams }: { params: Promise<{ slug: string }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const { slug } = await params;
+  const { mode } = await searchParams;
   const event = await getEvent(slug);
 
   if (!event) notFound();
@@ -52,7 +53,8 @@ export default async function SocialLivePage({ params }: { params: Promise<{ slu
   const session = await auth();
   let isOrganizer = false;
   
-  if (session?.user?.email) {
+  // Only check organizer status if NOT in projector mode
+  if (session?.user?.email && mode !== 'projector') {
     const user = await prisma.user.findUnique({ where: { email: session.user.email } });
     if (user && user.id === event.organizerId) {
       isOrganizer = true;

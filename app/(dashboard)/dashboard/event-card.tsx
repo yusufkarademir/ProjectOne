@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, ImageIcon, QrCode, Edit, Trash2, Copy, Download, ExternalLink, MoreVertical, Play, Eye, Settings, Shield } from 'lucide-react';
+import { Calendar, ImageIcon, QrCode, Edit, Trash2, Copy, Download, ExternalLink, MoreVertical, Play, Eye, Settings, Shield, Monitor, Tv, Smartphone, Projector } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { deleteEvent, duplicateEvent } from '../../lib/event-actions';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import QRCodeStudio from '../../components/QRCodeStudio';
 import CustomQRCode from '../../components/CustomQRCode';
+import StageControlModal from '../../components/stage/StageControlModal';
+import InfoTooltip from '../../components/ui/InfoTooltip';
 
 interface Event {
   id: string;
@@ -19,6 +21,8 @@ interface Event {
     photos: number;
   };
   themeConfig?: any;
+  socialSettings?: any;
+  stageConfig?: any;
 }
 
 interface DeleteModalProps {
@@ -67,6 +71,7 @@ export default function EventCard({ event }: { event: Event }) {
   const router = useRouter();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [qrStudioOpen, setQrStudioOpen] = useState(false);
+  const [stageModalOpen, setStageModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [origin, setOrigin] = useState('');
 
@@ -103,6 +108,13 @@ export default function EventCard({ event }: { event: Event }) {
     }
   };
 
+  const handleSocialClick = (e: React.MouseEvent) => {
+    if (!event.socialSettings?.enabled) {
+      e.preventDefault();
+      toast.error('Sosyal Duvar özelliği kapalı. Lütfen önce ayarlardan etkinleştirin.');
+    }
+  };
+
   const eventLink = origin ? `${origin}/e/${event.slug}` : '';
 
   const handleCopyLink = (e: React.MouseEvent) => {
@@ -125,7 +137,7 @@ export default function EventCard({ event }: { event: Event }) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 relative h-full flex flex-col group">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 relative h-full flex flex-col group event-card">
             {/* Status Badge */}
             <div className="absolute top-4 right-4 z-10">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm backdrop-blur-md ${
@@ -152,9 +164,10 @@ export default function EventCard({ event }: { event: Event }) {
                         />
                     )}
                     <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
-                        <span className="bg-white/90 text-gray-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                        <div className="bg-white/90 text-gray-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-2">
                             Özelleştir
-                        </span>
+                            <InfoTooltip content="QR kod tasarımını özelleştirin ve masa kartı oluşturun." />
+                        </div>
                     </div>
                 </div>
                 
@@ -177,68 +190,136 @@ export default function EventCard({ event }: { event: Event }) {
                     </div>
                 </div>
 
-                {/* Admin Actions Area */}
-                <div className="space-y-3 mb-6">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                        <Shield size={12} />
-                        Yönetici Paneli
-                    </p>
-                    <div className="grid grid-cols-2 gap-2">
-                        <Link 
-                            href={`/events/${event.id}`}
-                            className="flex items-center justify-center gap-2 bg-gray-900 text-white py-2.5 rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors"
+                <div className="space-y-5 mb-2">
+                    {/* Management Section */}
+                    <div>
+                        <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <Settings size={12} className="text-gray-500" />
+                            Yönetim
+                            <InfoTooltip content="Etkinlik detaylarını düzenleyin veya fotoğraf galerisini yönetin." />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Link 
+                                href={`/events/${event.id}`}
+                                className="flex items-center justify-center gap-2 bg-gray-900 text-white py-2.5 rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors"
+                            >
+                                <Edit size={14} />
+                                <span>Düzenle</span>
+                            </Link>
+                            <Link 
+                                href={`/events/${event.id}/gallery`}
+                                className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 py-2.5 rounded-lg font-medium text-sm hover:bg-gray-50 transition-colors"
+                            >
+                                <ImageIcon size={14} />
+                                <span>Galeri</span>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Live Screens Section */}
+                    <div>
+                        <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <Play size={12} className="text-purple-500" />
+                            Canlı Yayın Ekranları
+                            <InfoTooltip content="Büyük ekrana yansıtılacak slayt gösterisi ve sosyal duvar." />
+                        </div>
+                        <div className="space-y-2">
+                            {/* Slide */}
+                            <div className="grid grid-cols-[1fr_auto] gap-1">
+                                <Link 
+                                    href={`/e/${event.slug}/live`}
+                                    target="_blank"
+                                    className="flex items-center justify-center gap-2 bg-purple-50 text-purple-700 py-2 rounded-lg text-xs font-medium hover:bg-purple-100 transition-colors border border-purple-100"
+                                >
+                                    <Monitor size={14} />
+                                    <span>Slayt</span>
+                                </Link>
+                                <Link 
+                                    href={`/e/${event.slug}/live?mode=projector`}
+                                    target="_blank"
+                                    className="flex items-center justify-center px-3 bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 transition-colors border border-purple-200"
+                                    title="Slayt (Yansıtma Modu)"
+                                >
+                                    <Projector size={14} />
+                                </Link>
+                            </div>
+
+                            {/* Social Wall */}
+                            <div className="grid grid-cols-[1fr_auto] gap-1">
+                                <Link 
+                                    href={`/e/${event.slug}/social-live`}
+                                    target="_blank"
+                                    onClick={handleSocialClick}
+                                    className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-colors border ${
+                                        event.socialSettings?.enabled 
+                                        ? 'bg-pink-50 text-pink-700 hover:bg-pink-100 border-pink-100' 
+                                        : 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
+                                    }`}
+                                >
+                                    <Tv size={14} />
+                                    <span>Sosyal Duvar</span>
+                                </Link>
+                                <Link 
+                                    href={`/e/${event.slug}/social-live?mode=projector`}
+                                    target="_blank"
+                                    onClick={handleSocialClick}
+                                    className={`flex items-center justify-center px-3 rounded-lg transition-colors border ${
+                                        event.socialSettings?.enabled 
+                                        ? 'bg-pink-100 text-pink-800 hover:bg-pink-200 border-pink-200' 
+                                        : 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
+                                    }`}
+                                    title="Sosyal Duvar (Yansıtma Modu)"
+                                >
+                                    <Projector size={14} />
+                                </Link>
+                            </div>
+                        </div>
+                        
+                        {/* Stage Mode Control */}
+                        <button 
+                            onClick={() => setStageModalOpen(true)}
+                            className={`w-full mt-2 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-colors border ${
+                                event.stageConfig?.isActive
+                                ? 'bg-red-50 text-red-600 border-red-100 hover:bg-red-100 animate-pulse'
+                                : 'bg-purple-50 text-purple-700 border-purple-100 hover:bg-purple-100'
+                            }`}
                         >
-                            <Edit size={14} />
-                            <span>Düzenle</span>
-                        </Link>
-                        <Link 
-                            href={`/events/${event.id}/gallery`}
-                            className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 py-2.5 rounded-lg font-medium text-sm hover:bg-gray-50 transition-colors"
-                        >
-                            <ImageIcon size={14} />
-                            <span>Galeri</span>
-                        </Link>
+                            <Settings size={14} />
+                            <span>{event.stageConfig?.isActive ? 'Sahne Modu: AKTİF' : 'Sahne Yönetimi'}</span>
+                        </button>
                     </div>
                 </div>
 
-                {/* Public Links Area */}
+                {/* Guest Preview Section */}
                 <div className="mt-auto pt-4 border-t border-gray-100">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                        <ExternalLink size={12} />
-                        Misafir Linkleri
-                    </p>
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <Smartphone size={12} />
+                            Misafir Önizleme
+                            <InfoTooltip content="Misafirlerin göreceği ekranları test edin." />
+                        </div>
+                    </div>
                     <div className="grid grid-cols-2 gap-2">
                         <Link 
                             href={`/e/${event.slug}`}
                             target="_blank"
-                            className="flex items-center justify-center gap-2 bg-blue-50 text-blue-700 py-2 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
+                            className="flex items-center justify-center gap-2 text-gray-600 bg-gray-50 hover:bg-gray-100 py-2 rounded-lg text-xs font-medium transition-colors"
                         >
                             <Eye size={14} />
-                            <span>Misafir Sayfası</span>
+                            <span>Karşılama</span>
                         </Link>
                         <Link 
                             href={`/e/${event.slug}/social`}
                             target="_blank"
-                            className="flex items-center justify-center gap-2 bg-green-50 text-green-700 py-2 rounded-lg text-xs font-medium hover:bg-green-100 transition-colors"
+                            onClick={handleSocialClick}
+                            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-colors ${
+                                event.socialSettings?.enabled
+                                ? 'text-gray-600 bg-gray-50 hover:bg-gray-100'
+                                : 'text-gray-400 bg-gray-50 cursor-not-allowed'
+                            }`}
                         >
                             <Eye size={14} />
-                            <span>Sosyal Duvar</span>
-                        </Link>
-                        <Link 
-                            href={`/e/${event.slug}/live`}
-                            target="_blank"
-                            className="flex items-center justify-center gap-2 bg-purple-50 text-purple-700 py-2 rounded-lg text-xs font-medium hover:bg-purple-100 transition-colors"
-                        >
-                            <Play size={14} />
-                            <span>Canlı (Klasik)</span>
-                        </Link>
-                        <Link 
-                            href={`/e/${event.slug}/social-live`}
-                            target="_blank"
-                            className="flex items-center justify-center gap-2 bg-pink-50 text-pink-700 py-2 rounded-lg text-xs font-medium hover:bg-pink-100 transition-colors"
-                        >
-                            <Play size={14} />
-                            <span>Canlı (Sosyal)</span>
+                            <span>Mobil Akış</span>
                         </Link>
                     </div>
                 </div>
@@ -288,6 +369,13 @@ export default function EventCard({ event }: { event: Event }) {
         eventName={event.name}
         eventId={event.id}
         initialConfig={(event.themeConfig as any)?.qr}
+      />
+
+      <StageControlModal 
+        isOpen={stageModalOpen}
+        onClose={() => setStageModalOpen(false)}
+        eventId={event.id}
+        initialConfig={event.stageConfig}
       />
     </>
   );

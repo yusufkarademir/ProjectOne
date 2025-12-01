@@ -2,8 +2,9 @@ import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import LiveSlideshow from './live-slideshow';
 
-export default async function LivePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function LivePage({ params, searchParams }: { params: Promise<{ slug: string }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const { slug } = await params;
+  const { mode } = await searchParams;
   const event = await prisma.event.findUnique({
     where: { slug },
   });
@@ -35,6 +36,21 @@ export default async function LivePage({ params }: { params: Promise<{ slug: str
   const theme = themeConfig.theme || 'modern';
   const frameStyle = themeConfig.frame || 'none';
 
+  const { auth } = await import('@/auth');
+  const session = await auth();
+  
+  let isOrganizer = false;
+  // Only check organizer status if NOT in projector mode
+  if (session?.user?.email && mode !== 'projector') {
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+    if (user && user.id === event.organizerId) {
+      isOrganizer = true;
+    }
+  }
+
   return (
     <LiveSlideshow 
         initialPhotos={photos} 
@@ -43,6 +59,8 @@ export default async function LivePage({ params }: { params: Promise<{ slug: str
         qrCodeUrl={event.qrCodeUrl || ''}
         theme={theme}
         frameStyle={frameStyle}
+        isOrganizer={isOrganizer}
+        eventId={event.id}
     />
   );
 }

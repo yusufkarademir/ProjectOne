@@ -117,11 +117,11 @@ export default function SocialFeedItem({ photo, settings }: SocialFeedItemProps)
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6 transition-all hover:shadow-md">
       {/* Image */}
-      <div className="relative aspect-[4/5] bg-gray-100 group">
+      <div className="relative bg-gray-100 group min-h-[200px]">
         <img 
           src={photo.url} 
           alt="Event photo"
-          className="w-full h-full object-cover"
+          className="w-full h-auto max-h-[80vh] object-contain mx-auto"
           loading="lazy"
         />
         {/* Overlay Gradient */}

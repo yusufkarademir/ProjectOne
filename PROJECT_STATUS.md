@@ -1,9 +1,9 @@
-# Proje Durumu: Etkinlik QR & Sosyal Duvar (v1.2.1)
+# Proje Durumu: Etkinlik QR & Sosyal Duvar (v1.3.0)
 
 ## 📅 Son Güncelleme: 01 Aralık 2025
 
 ## 🚀 Genel Bakış
-Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar ve moderasyon özelliklerini içeren kapsamlı bir platform haline gelmiştir. Tüm temel özellikler tamamlanmış, test edilmiş ve kullanıma hazırdır.
+Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar, moderasyon ve **gelişmiş sahne yönetimi** özelliklerini içeren kapsamlı bir platform haline gelmiştir. Tüm temel özellikler tamamlanmış, test edilmiş ve kullanıma hazırdır.
 
 ## ✅ Tamamlanan Özellikler
 
@@ -11,6 +11,8 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 - Etkinlik oluşturma, düzenleme, silme
 - QR kod oluşturma ve özelleştirme (QR Studio)
 - Masa kartı tasarımı ve PDF çıktısı
+- **Kullanıcı Rehberi (v1.3.0):** Yeni kullanıcılar için adım adım interaktif tur.
+- **Akıllı İpuçları (v1.3.0):** Özelliklerin yanında açıklayıcı bilgi kutucukları.
 
 ### 2. Misafir Deneyimi
 - QR ile hızlı erişim (Uygulama gerektirmez)
@@ -20,11 +22,18 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 
 ### 3. Sosyal Duvar (Live)
 - **Netflix Tarzı Vitrin:** `/live` rotasında akan fotoğraf slayt gösterisi.
-- **Gelişmiş Görünüm (v1.2.1):** Yatay ve dikey fotoğraflar için optimize edilmiş, boşluksuz ve kesilmesiz akıllı yerleşim.
+- **Gelişmiş Görünüm:** Yatay ve dikey fotoğraflar için optimize edilmiş, boşluksuz ve kesilmesiz akıllı yerleşim.
 - **Canlı Etkileşim:** Anlık gelen yorumlar ve beğeniler.
 - **Animasyonlar:** Yeni içerik geldiğinde dinamik geçişler.
+- **Yansıtma Modu (v1.3.0):** `?mode=projector` ile moderatör paneli gizlenmiş temiz ekran.
 
-### 4. Güvenlik ve Moderasyon (v1.1.0 - v1.2.0)
+### 4. Sahne Modu (v1.3.0)
+- **Lounge Modu:** Şık bekleme ekranı (Logo, Saat, Mesaj).
+- **Hype Modu:** Enerji yükseltici geri sayım ve hareketli arka plan.
+- **Sinema Modu:** YouTube video ve oynatma listesi desteği.
+- **Merkezi Kontrol:** Tüm ekranları tek bir panelden yönetme.
+
+### 5. Güvenlik ve Moderasyon
 - **Küfür Filtresi:** Yorumlarda otomatik yıldızlama (***).
 - **Manuel Onay Modu:** Yorumlar ve fotoğraflar moderatör onayına düşer.
 - **Canlı Moderasyon Paneli:** `/social-live` ekranında sağ altta gizli panel.

@@ -5,7 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { getSocialFeed, getSocialStats } from '@/app/lib/social-actions';
 import { getLatestPhotos } from '@/app/lib/event-actions';
-import { Heart, MessageSquare, Camera, Trophy, Star, Eye, EyeOff, Projector } from 'lucide-react';
+import { Heart, MessageSquare, Camera, Trophy, Star, Eye, EyeOff, Projector, Theater, Monitor } from 'lucide-react';
+import StageDisplay from '../stage/StageDisplay';
+import StageControlModal from '../stage/StageControlModal';
 
 interface SocialLiveDisplayProps {
   initialPhotos: any[];
@@ -15,6 +17,8 @@ interface SocialLiveDisplayProps {
   isOrganizer?: boolean;
   eventId?: string;
 }
+
+import PendingQueue from './PendingQueue';
 
 export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCodeUrl, isOrganizer, eventId }: SocialLiveDisplayProps) {
   const [photos, setPhotos] = useState<any[]>(initialPhotos);
@@ -26,9 +30,13 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
   const [showModPanel, setShowModPanel] = useState(false);
   const [resetting, setResetting] = useState(false);
   
-  const [stats, setStats] = useState({ photos: 0, comments: 0, reactions: 0, topPhoto: null as any });
+  const [stats, setStats] = useState({ photos: 0, comments: 0, reactions: 0, topLiked: null as any, topCommented: null as any });
   const [showStats, setShowStats] = useState(true);
   const [forcedPhoto, setForcedPhoto] = useState<any>(null);
+
+  // Stage Mode State
+  const [stageConfig, setStageConfig] = useState<any>(null);
+  const [showStageModal, setShowStageModal] = useState(false);
 
   // Import actions dynamically
   const { togglePanicMode, resetSocialData } = require('@/app/lib/social-actions');
@@ -63,7 +71,11 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
       // 2. Get social feed
       const feedResult = await getSocialFeed(slug, since);
       
-      // Check for Panic Mode
+      // Check for Panic Mode (Legacy) & Stage Mode
+      if (feedResult.stageConfig) {
+        setStageConfig(feedResult.stageConfig);
+      }
+      
       if (feedResult.panicMode) {
         setPanicMode(true);
       } else {
@@ -109,8 +121,8 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
   const toggleForcedPhoto = () => {
     if (forcedPhoto) {
       setForcedPhoto(null);
-    } else if (stats.topPhoto) {
-      setForcedPhoto(stats.topPhoto);
+    } else if (stats.topLiked) {
+      setForcedPhoto(stats.topLiked);
     }
   };
 
@@ -140,6 +152,8 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
 
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden flex">
+      {/* Stage Mode Overlay */}
+      <StageDisplay config={stageConfig} event={{ name: eventName, slug }} />
       {/* Left: Main Visual (2/3) */}
       <div className="w-2/3 relative h-full bg-gray-900 flex items-center justify-center overflow-hidden">
         {/* Background Blur */}
@@ -148,6 +162,77 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
                 <img src={activePhoto.url} alt="" className="w-full h-full object-cover" />
             )}
         </div>
+
+        {/* Top Stats Bar & Highlights */}
+        <AnimatePresence>
+            {showStats && (
+                <motion.div 
+                    initial={{ y: -100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -100, opacity: 0 }}
+                    className="absolute top-0 left-0 right-0 z-30 p-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex items-start justify-between"
+                >
+                    {/* General Stats */}
+                    <div className="flex gap-6">
+                        <div className="flex flex-col items-center">
+                            <span className="text-3xl font-bold text-white leading-none">{stats.photos}</span>
+                            <div className="flex items-center gap-1.5 text-blue-400 mt-1">
+                                <Camera size={14} />
+                                <span className="text-[10px] uppercase font-bold tracking-wider">Fotoğraf</span>
+                            </div>
+                        </div>
+                        <div className="w-px h-10 bg-white/20"></div>
+                        <div className="flex flex-col items-center">
+                            <span className="text-3xl font-bold text-white leading-none">{stats.reactions}</span>
+                            <div className="flex items-center gap-1.5 text-red-500 mt-1">
+                                <Heart size={14} />
+                                <span className="text-[10px] uppercase font-bold tracking-wider">Beğeni</span>
+                            </div>
+                        </div>
+                        <div className="w-px h-10 bg-white/20"></div>
+                        <div className="flex flex-col items-center">
+                            <span className="text-3xl font-bold text-white leading-none">{stats.comments}</span>
+                            <div className="flex items-center gap-1.5 text-green-400 mt-1">
+                                <MessageSquare size={14} />
+                                <span className="text-[10px] uppercase font-bold tracking-wider">Yorum</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Top Photos */}
+                    <div className="flex gap-4">
+                        {stats.topLiked && (
+                            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md p-2 rounded-xl border border-white/10">
+                                <div className="text-right">
+                                    <div className="flex items-center justify-end gap-1 text-yellow-400 mb-0.5">
+                                        <Trophy size={12} />
+                                        <span className="text-[10px] font-bold uppercase">En Beğenilen</span>
+                                    </div>
+                                    <p className="text-xs text-gray-300">{stats.topLiked._count.reactions} Beğeni</p>
+                                </div>
+                                <div className="w-10 h-10 rounded-lg overflow-hidden border border-yellow-500/50 shadow-lg shadow-yellow-500/20">
+                                    <img src={stats.topLiked.url} className="w-full h-full object-cover" />
+                                </div>
+                            </div>
+                        )}
+                        {stats.topCommented && (
+                            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md p-2 rounded-xl border border-white/10">
+                                <div className="text-right">
+                                    <div className="flex items-center justify-end gap-1 text-blue-400 mb-0.5">
+                                        <MessageSquare size={12} />
+                                        <span className="text-[10px] font-bold uppercase">En Konuşulan</span>
+                                    </div>
+                                    <p className="text-xs text-gray-300">{stats.topCommented._count.comments} Yorum</p>
+                                </div>
+                                <div className="w-10 h-10 rounded-lg overflow-hidden border border-blue-500/50 shadow-lg shadow-blue-500/20">
+                                    <img src={stats.topCommented.url} className="w-full h-full object-cover" />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
 
         {/* Main Image */}
         <AnimatePresence mode="wait">
@@ -184,39 +269,7 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
             )}
         </AnimatePresence>
 
-        {/* Stats Bar (Bottom Overlay) */}
-        <AnimatePresence>
-          {showStats && (
-            <motion.div 
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              className="absolute bottom-8 left-8 right-8 z-20 flex justify-center gap-8"
-            >
-                <div className="bg-black/50 backdrop-blur-md rounded-full px-6 py-3 flex items-center gap-3 border border-white/10">
-                    <Camera className="text-blue-400" size={24} />
-                    <div>
-                        <span className="block text-xl font-bold leading-none">{stats.photos}</span>
-                        <span className="text-[10px] uppercase tracking-wider opacity-70">Fotoğraf</span>
-                    </div>
-                </div>
-                <div className="bg-black/50 backdrop-blur-md rounded-full px-6 py-3 flex items-center gap-3 border border-white/10">
-                    <Heart className="text-red-500" size={24} />
-                    <div>
-                        <span className="block text-xl font-bold leading-none">{stats.reactions}</span>
-                        <span className="text-[10px] uppercase tracking-wider opacity-70">Beğeni</span>
-                    </div>
-                </div>
-                <div className="bg-black/50 backdrop-blur-md rounded-full px-6 py-3 flex items-center gap-3 border border-white/10">
-                    <MessageSquare className="text-green-400" size={24} />
-                    <div>
-                        <span className="block text-xl font-bold leading-none">{stats.comments}</span>
-                        <span className="text-[10px] uppercase tracking-wider opacity-70">Yorum</span>
-                    </div>
-                </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
       </div>
 
       {/* Right: Social Feed & QR (1/3) */}
@@ -236,24 +289,7 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
             </div>
         </div>
 
-        {/* Top Photo Highlight (If exists) */}
-        {stats.topPhoto && (
-            <div className="bg-yellow-50 p-4 border-b border-yellow-100 flex items-center gap-4">
-                <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-yellow-200 shrink-0">
-                    <img src={stats.topPhoto.url} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-yellow-500/20"></div>
-                </div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <Trophy size={14} className="text-yellow-600" />
-                        <span className="text-xs font-bold text-yellow-700 uppercase">Gecenin Yıldızı</span>
-                    </div>
-                    <p className="text-sm font-medium text-gray-800 truncate">
-                        {stats.topPhoto._count.reactions} Beğeni ile zirvede!
-                    </p>
-                </div>
-            </div>
-        )}
+
 
         {/* Feed List */}
         <div className="flex-1 overflow-y-hidden relative bg-gray-50/50">
@@ -380,14 +416,18 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
                     
                     <div className="space-y-2 mb-4">
                         <button 
-                            onClick={handlePanicToggle}
-                            className={`w-full py-2 px-3 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
-                                panicMode 
-                                ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                                : 'bg-red-100 text-red-700 hover:bg-red-200'
-                            }`}
+                            onClick={() => setShowStageModal(true)}
+                            className="w-full py-2 px-3 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 bg-purple-100 text-purple-700 hover:bg-purple-200"
                         >
-                            {panicMode ? '✅ Yayını Başlat' : '🚨 ACİL DURDUR'}
+                            <Theater size={16} />
+                            Sahne Modu
+                        </button>
+                        <button 
+                            onClick={() => window.open(`${window.location.pathname}?mode=projector`, '_blank')}
+                            className="w-full py-2 px-3 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200"
+                        >
+                            <Monitor size={16} />
+                            Yansıtma Modu (Temiz)
                         </button>
 
                         <div className="grid grid-cols-2 gap-2">
@@ -403,7 +443,7 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
 
                           <button 
                               onClick={toggleForcedPhoto}
-                              disabled={!stats.topPhoto}
+                              disabled={!stats.topLiked}
                               className={`py-2 px-3 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2 ${
                                 forcedPhoto ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
                               }`}
@@ -434,118 +474,18 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
             )}
         </div>
       )}
-    </div>
-  );
-}
 
-function PendingQueue({ eventId }: { eventId?: string }) {
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [processingId, setProcessingId] = useState<string | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-
-  // Import actions dynamically
-  const { getPendingItems, approveComment, rejectComment, approvePhoto, rejectPhoto } = require('@/app/lib/social-actions');
-
-  const fetchItems = async () => {
-    if (!eventId) return;
-    // Silent update
-    const result = await getPendingItems(eventId);
-    if (result.success) {
-      // Deduplicate items by ID
-      const uniqueItems = Array.from(new Map(result.items.map((item: any) => [item.data.id, item])).values());
-      setItems(uniqueItems);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchItems();
-    const interval = setInterval(fetchItems, 5000); // Poll every 5s
-    return () => clearInterval(interval);
-  }, [eventId]);
-
-  const handleAction = async (item: any, action: 'approve' | 'reject') => {
-    setProcessingId(item.data.id);
-    
-    if (item.type === 'comment') {
-        if (action === 'approve') await approveComment(item.data.id);
-        else await rejectComment(item.data.id);
-    } else if (item.type === 'photo') {
-        if (action === 'approve') await approvePhoto(item.data.id);
-        else await rejectPhoto(item.data.id);
-    }
-
-    // Optimistic update
-    setItems(prev => prev.filter(i => i.data.id !== item.data.id));
-    setProcessingId(null);
-  };
-
-  if (loading) return <div className="text-xs text-gray-400 text-center py-4">Yükleniyor...</div>;
-  if (items.length === 0) return <div className="text-xs text-gray-400 text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-200">Bekleyen öğe yok</div>;
-
-  return (
-    <>
-        {/* Image Preview Overlay */}
-        {previewImage && (
-            <div className="fixed inset-0 z-[100] pointer-events-none flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white p-2 rounded-xl shadow-2xl max-w-[80vw] max-h-[80vh]">
-                    <img src={previewImage} className="max-w-full max-h-[75vh] rounded-lg object-contain" />
-                </div>
-            </div>
+      {/* Stage Control Modal */}
+      <AnimatePresence>
+        {showStageModal && (
+            <StageControlModal 
+                isOpen={showStageModal} 
+                onClose={() => setShowStageModal(false)} 
+                eventId={eventId || ''}
+                initialConfig={stageConfig}
+            />
         )}
-
-        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1 min-h-[200px]">
-            {items.map((item) => (
-                <div key={item.data.id} className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 text-left">
-                    {item.type === 'comment' ? (
-                        <div className="mb-2">
-                            <div className="flex items-center justify-between mb-1">
-                                <span className="text-[10px] uppercase font-bold text-blue-600 bg-blue-50 px-1 rounded">Yorum</span>
-                                {item.data.photo?.url && (
-                                    <div 
-                                        className="h-8 w-8 rounded overflow-hidden border border-gray-200 cursor-zoom-in"
-                                        onMouseEnter={() => setPreviewImage(item.data.photo.url)}
-                                        onMouseLeave={() => setPreviewImage(null)}
-                                    >
-                                        <img src={item.data.photo.url} className="w-full h-full object-cover" />
-                                    </div>
-                                )}
-                            </div>
-                            <p className="text-xs text-gray-900 mt-1 line-clamp-3 font-medium">"{item.data.content}"</p>
-                        </div>
-                    ) : (
-                        <div className="mb-2 group relative">
-                            <span className="text-[10px] uppercase font-bold text-purple-600 bg-purple-50 px-1 rounded">Fotoğraf</span>
-                            <div 
-                                className="mt-1 h-20 w-full bg-gray-100 rounded overflow-hidden cursor-zoom-in border border-gray-200 hover:border-purple-300 transition-colors"
-                                onMouseEnter={() => setPreviewImage(item.data.url)}
-                                onMouseLeave={() => setPreviewImage(null)}
-                            >
-                                <img src={item.data.url} className="w-full h-full object-cover" />
-                            </div>
-                        </div>
-                    )}
-                    
-                    <div className="flex gap-2">
-                        <button 
-                            onClick={() => handleAction(item, 'approve')}
-                            disabled={!!processingId}
-                            className="flex-1 bg-green-500 text-white py-1.5 rounded text-xs font-bold hover:bg-green-600 transition-colors"
-                        >
-                            Onayla
-                        </button>
-                        <button 
-                            onClick={() => handleAction(item, 'reject')}
-                            disabled={!!processingId}
-                            className="flex-1 bg-red-100 text-red-600 py-1.5 rounded text-xs font-bold hover:bg-red-200 transition-colors"
-                        >
-                            Reddet
-                        </button>
-                    </div>
-                </div>
-            ))}
-        </div>
-    </>
+      </AnimatePresence>
+    </div>
   );
 }

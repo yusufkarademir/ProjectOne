@@ -48,6 +48,9 @@ model Event {
 
   // Social Wall Features
   socialSettings      Json?    // { enabled: boolean, features: { comments: boolean, ratings: boolean, reactions: boolean, tags: boolean }, availableTags: string[] }
+  
+  // Stage Mode Configuration
+  stageConfig         Json?    // { isActive: boolean, mode: 'lounge' | 'hype' | 'cinema', title: string, message: string, showClock: boolean, showQr: boolean, musicEnabled: boolean, musicType: string, countdownTarget: string, videoUrl: string }
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

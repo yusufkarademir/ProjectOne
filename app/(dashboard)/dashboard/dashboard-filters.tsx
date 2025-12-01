@@ -26,7 +26,7 @@ export default function DashboardFilters() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 dashboard-filters">
         <div className="relative w-full md:w-96">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input 

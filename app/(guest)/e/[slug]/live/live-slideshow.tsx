@@ -3,9 +3,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getLatestPhotos } from '@/app/lib/event-actions';
+import { getSocialFeed as getSocialFeedAction } from '@/app/lib/social-actions';
 import { QRCodeSVG } from 'qrcode.react';
 import Marquee from 'react-fast-marquee';
 import FramedImage from '@/app/components/FramedImage';
+import StageDisplay from '@/app/components/stage/StageDisplay';
+import StageControlModal from '@/app/components/stage/StageControlModal';
+import PendingQueue from '@/app/components/social/PendingQueue';
+import { Shield, Theater, Camera, Monitor } from 'lucide-react';
 
 interface LiveSlideshowProps {
   initialPhotos: any[];
@@ -14,13 +19,20 @@ interface LiveSlideshowProps {
   qrCodeUrl: string;
   theme: string;
   frameStyle?: 'none' | 'polaroid' | 'gradient' | 'minimal' | 'corners' | 'cinema' | 'vintage' | 'gold' | 'neon' | 'floral';
+  isOrganizer?: boolean;
+  eventId?: string;
 }
 
-export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUrl, theme, frameStyle = 'none' }: LiveSlideshowProps) {
+export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUrl, theme, frameStyle = 'none', isOrganizer, eventId }: LiveSlideshowProps) {
   const [allPhotos, setAllPhotos] = useState<any[]>(initialPhotos);
   const [spotlightBatch, setSpotlightBatch] = useState<any[]>([]);
   const [lastFetch, setLastFetch] = useState(new Date().toISOString());
   const [origin, setOrigin] = useState('');
+
+  // Moderator State
+  const [showModPanel, setShowModPanel] = useState(false);
+  const [stageConfig, setStageConfig] = useState<any>(null);
+  const [showStageModal, setShowStageModal] = useState(false);
 
   useEffect(() => {
     setOrigin(window.location.origin);
@@ -45,6 +57,12 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
         setTimeout(() => {
             setSpotlightBatch([]);
         }, duration);
+      }
+
+      // Fetch Stage Config
+      const feedResult = await getSocialFeedAction(slug, lastFetch);
+      if (feedResult.stageConfig) {
+        setStageConfig(feedResult.stageConfig);
       }
     }, 5000);
 
@@ -127,6 +145,9 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
 
   return (
     <div className={`fixed inset-0 overflow-hidden ${styles.bg} flex flex-col`}>
+      {/* Stage Mode Overlay */}
+      <StageDisplay config={stageConfig} event={{ name: eventName, slug }} />
+
       {/* Header - Fixed Height */}
       <div className="relative z-20 px-6 py-4 flex justify-between items-start bg-gradient-to-b from-black/50 to-transparent flex-none h-[15vh] min-h-[100px]">
         <div>
@@ -248,6 +269,66 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
                     </motion.div>
                 </motion.div>
             </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Moderator Controls */}
+      {isOrganizer && (
+        <div className="fixed bottom-4 right-4 z-50">
+            <button 
+                onClick={() => setShowModPanel(!showModPanel)}
+                className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors border border-blue-500"
+                title="Moderatör Paneli"
+            >
+                <Shield size={24} />
+            </button>
+            
+            {showModPanel && (
+                <div className="absolute bottom-14 right-0 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 animate-in fade-in slide-in-from-bottom-4 max-h-[80vh] flex flex-col">
+                    <h3 className="text-sm font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2 flex items-center justify-between">
+                        <span>Moderatör Kontrolleri</span>
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">Slayt</span>
+                    </h3>
+                    
+                    <div className="space-y-2 mb-4">
+                        <button 
+                            onClick={() => setShowStageModal(true)}
+                            className="w-full py-2 px-3 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 bg-purple-100 text-purple-700 hover:bg-purple-200"
+                        >
+                            <Theater size={16} />
+                            Sahne Modu
+                        </button>
+                        <button 
+                            onClick={() => window.open(`${window.location.pathname}?mode=projector`, '_blank')}
+                            className="w-full py-2 px-3 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200"
+                        >
+                            <Monitor size={16} />
+                            Yansıtma Modu (Temiz)
+                        </button>
+                    </div>
+
+                    {/* Pending Photos Queue */}
+                    <div className="flex-1 overflow-hidden flex flex-col border-t border-gray-100 pt-3">
+                        <h4 className="text-xs font-bold text-gray-500 uppercase mb-2 flex items-center gap-2">
+                            Onay Bekleyen Fotoğraflar
+                            <span className="bg-yellow-100 text-yellow-700 px-1.5 rounded-full text-[10px]">Canlı</span>
+                        </h4>
+                        <PendingQueue eventId={eventId} type="photo" />
+                    </div>
+                </div>
+            )}
+        </div>
+      )}
+
+      {/* Stage Control Modal */}
+      <AnimatePresence>
+        {showStageModal && (
+            <StageControlModal 
+                isOpen={showStageModal} 
+                onClose={() => setShowStageModal(false)} 
+                eventId={eventId || ''}
+                initialConfig={stageConfig}
+            />
         )}
       </AnimatePresence>
     </div>
