@@ -304,6 +304,15 @@ export async function updateEventPrivacySettings(eventId: string, privacyConfig:
     if (typeof isPasswordProtected !== 'undefined') updateData.isPasswordProtected = isPasswordProtected;
     if (typeof guestPin !== 'undefined') updateData.guestPin = guestPin;
 
+    // Sync with socialSettings.requireApproval if requireModeration is changed
+    if (typeof restPrivacyConfig.requireModeration !== 'undefined') {
+      const currentSocialSettings = (event.socialSettings as any) || {};
+      updateData.socialSettings = {
+        ...currentSocialSettings,
+        requireApproval: restPrivacyConfig.requireModeration
+      };
+    }
+
     await prisma.event.update({
       where: { id: eventId },
       data: updateData,

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play, Square, Music, Clock, QrCode, Film, Coffee, Zap } from 'lucide-react';
+import { X, Play, Square, Music, Clock, QrCode, Film, Coffee, Zap, Video } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { updateStageMode, toggleStageMode } from '@/app/lib/stage-actions';
 import toast from 'react-hot-toast';
 
@@ -10,10 +11,11 @@ interface StageControlModalProps {
   isOpen: boolean;
   onClose: () => void;
   eventId: string;
+  slug: string;
   initialConfig: any;
 }
 
-export default function StageControlModal({ isOpen, onClose, eventId, initialConfig }: StageControlModalProps) {
+export default function StageControlModal({ isOpen, onClose, eventId, slug, initialConfig }: StageControlModalProps) {
   const [config, setConfig] = useState(initialConfig || {
     mode: 'lounge',
     title: '',
@@ -23,7 +25,8 @@ export default function StageControlModal({ isOpen, onClose, eventId, initialCon
     musicEnabled: false,
     musicType: 'lofi',
     countdownDuration: 5,
-    videoUrl: ''
+    videoUrl: '',
+    jitsiRoom: ''
   });
   
   const [isActive, setIsActive] = useState(initialConfig?.isActive || false);
@@ -123,6 +126,21 @@ export default function StageControlModal({ isOpen, onClose, eventId, initialCon
               <Film size={32} />
               <span className="font-bold">Sinema</span>
               <span className="text-xs opacity-70">Video Gösterimi</span>
+            </button>
+            <button
+              onClick={() => {
+                const roomName = config.jitsiRoom || `${slug}-${Math.random().toString(36).substring(7)}`;
+                handleUpdate({ ...config, mode: 'live-video', jitsiRoom: roomName });
+              }}
+              className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${
+                config.mode === 'live-video' 
+                  ? 'border-green-500 bg-green-50 text-green-700' 
+                  : 'border-gray-100 hover:border-gray-200 text-gray-600'
+              }`}
+            >
+              <Video size={32} />
+              <span className="font-bold">Canlı Bağlantı</span>
+              <span className="text-xs opacity-70">Video Görüşme</span>
             </button>
           </div>
 
@@ -226,6 +244,46 @@ export default function StageControlModal({ isOpen, onClose, eventId, initialCon
                     className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
                   />
                   <p className="text-xs text-gray-500 mt-1">Doğrudan video dosyası bağlantısı giriniz.</p>
+                </div>
+              </div>
+            )}
+
+            {config.mode === 'live-video' && (
+              <div className="space-y-6 animate-in fade-in">
+                <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 flex flex-col items-center text-center">
+                  <h3 className="font-bold text-lg text-blue-900 mb-2">Misafir Davet Linki</h3>
+                  <p className="text-sm text-blue-700 mb-6">
+                    Bu QR kodu telefonunuzla okutarak bağlantı linkini WhatsApp veya diğer uygulamalarla paylaşabilirsiniz.
+                  </p>
+                  
+                  <div className="bg-white p-4 rounded-xl shadow-sm mb-4">
+                    <QRCodeSVG 
+                      value={`${window.location.origin}/e/${slug}/meet?room=${config.jitsiRoom}`}
+                      size={200}
+                      level="H"
+                      includeMargin={true}
+                    />
+                  </div>
+
+                  <div className="w-full max-w-md">
+                    <label className="block text-xs font-medium text-blue-600 mb-1 text-left">Bağlantı Linki</label>
+                    <div className="flex gap-2">
+                      <input 
+                        readOnly
+                        value={`${window.location.origin}/e/${slug}/meet?room=${config.jitsiRoom}`}
+                        className="flex-1 text-xs p-2 rounded border border-blue-200 bg-white text-gray-600 select-all"
+                      />
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/e/${slug}/meet?room=${config.jitsiRoom}`);
+                          toast.success('Link kopyalandı');
+                        }}
+                        className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+                      >
+                        Kopyala
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

@@ -3,14 +3,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getLatestPhotos } from '@/app/lib/event-actions';
-import { getSocialFeed as getSocialFeedAction } from '@/app/lib/social-actions';
+import { getSocialFeed as getSocialFeedAction, updateSocialSettings, toggleModerationMode } from '@/app/lib/social-actions';
 import { QRCodeSVG } from 'qrcode.react';
 import Marquee from 'react-fast-marquee';
+import toast from 'react-hot-toast';
 import FramedImage from '@/app/components/FramedImage';
 import StageDisplay from '@/app/components/stage/StageDisplay';
 import StageControlModal from '@/app/components/stage/StageControlModal';
 import PendingQueue from '@/app/components/social/PendingQueue';
 import { Shield, Theater, Camera, Monitor } from 'lucide-react';
+import { JitsiMeeting } from '@jitsi/react-sdk';
 
 interface LiveSlideshowProps {
   initialPhotos: any[];
@@ -33,6 +35,7 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
   const [showModPanel, setShowModPanel] = useState(false);
   const [stageConfig, setStageConfig] = useState<any>(null);
   const [showStageModal, setShowStageModal] = useState(false);
+  const [moderationEnabled, setModerationEnabled] = useState(false);
 
   useEffect(() => {
     setOrigin(window.location.origin);
@@ -63,6 +66,9 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
       const feedResult = await getSocialFeedAction(slug, lastFetch);
       if (feedResult.stageConfig) {
         setStageConfig(feedResult.stageConfig);
+      }
+      if (feedResult.socialSettings) {
+        setModerationEnabled(feedResult.socialSettings.requireApproval || false);
       }
     }, 5000);
 
@@ -131,6 +137,24 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
   };
   const styles = getThemeStyles();
 
+  const handleToggleModeration = async () => {
+    const newState = !moderationEnabled;
+    setModerationEnabled(newState); // Optimistic update
+    
+    try {
+        const result = await toggleModerationMode(eventId || '', newState);
+        if (result.success) {
+            toast.success(newState ? 'Moderasyon Modu Açıldı' : 'Moderasyon Modu Kapandı');
+        } else {
+            setModerationEnabled(!newState); // Revert
+            toast.error('İşlem başarısız');
+        }
+    } catch (e) {
+        setModerationEnabled(!newState);
+        toast.error('Hata oluştu');
+    }
+  };
+
   if (allPhotos.length === 0) {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${styles.bg} ${styles.text}`}>
@@ -146,7 +170,42 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
   return (
     <div className={`fixed inset-0 overflow-hidden ${styles.bg} flex flex-col`}>
       {/* Stage Mode Overlay */}
-      <StageDisplay config={stageConfig} event={{ name: eventName, slug }} />
+      <AnimatePresence>
+        {stageConfig?.isActive && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-40 bg-black flex items-center justify-center"
+          >
+            {stageConfig.mode === 'live-video' ? (
+               <div className="w-full h-full">
+                 <JitsiMeeting
+                    roomName={stageConfig.jitsiRoom}
+                    configOverwrite={{
+                        startWithAudioMuted: false,
+                        disableModeratorIndicator: true,
+                        startScreenSharing: false,
+                        enableEmailInStats: false,
+                        prejoinPageEnabled: false,
+                        toolbarButtons: ['microphone', 'camera', 'tileview', 'fullscreen', 'hangup']
+                    }}
+                    interfaceConfigOverwrite={{
+                        DISABLE_JOIN_LEAVE_NOTIFICATIONS: true
+                    }}
+                    userInfo={{
+                        displayName: 'Canlı Sahne',
+                        email: 'stage@event.com'
+                    }}
+                    getIFrameRef={(iframeRef) => { iframeRef.style.height = '100%'; }}
+                />
+               </div>
+            ) : (
+                <StageDisplay config={stageConfig} event={{ name: eventName, slug }} />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Header - Fixed Height */}
       <div className="relative z-20 px-6 py-4 flex justify-between items-start bg-gradient-to-b from-black/50 to-transparent flex-none h-[15vh] min-h-[100px]">
@@ -305,6 +364,19 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
                             <Monitor size={16} />
                             Yansıtma Modu (Temiz)
                         </button>
+
+                        
+                        <div className="h-px bg-gray-100 my-2" />
+                        
+                        <div className="flex items-center justify-between px-1">
+                            <span className="text-sm font-medium text-gray-700">Moderasyon Modu</span>
+                            <button 
+                                onClick={handleToggleModeration}
+                                className={`w-12 h-6 rounded-full p-1 transition-colors ${moderationEnabled ? 'bg-blue-600' : 'bg-gray-300'}`}
+                            >
+                                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${moderationEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Pending Photos Queue */}
@@ -327,6 +399,7 @@ export default function LiveSlideshow({ initialPhotos, slug, eventName, qrCodeUr
                 isOpen={showStageModal} 
                 onClose={() => setShowStageModal(false)} 
                 eventId={eventId || ''}
+                slug={slug}
                 initialConfig={stageConfig}
             />
         )}

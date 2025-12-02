@@ -4,7 +4,7 @@ import ModernTemplate from '@/app/components/templates/ModernTemplate';
 import WeddingTemplate from '@/app/components/templates/WeddingTemplate';
 import CorporateTemplate from '@/app/components/templates/CorporateTemplate';
 import PartyTemplate from '@/app/components/templates/PartyTemplate';
-import FaceFinder from '@/app/components/ai/FaceFinder';
+
 
 import { incrementViewCount } from '@/app/lib/analytics-actions';
 
@@ -36,21 +36,18 @@ export default async function EventPage({
       return (
         <>
           <WeddingTemplate event={event} />
-          <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
         </>
       );
     case 'corporate':
       return (
         <>
           <CorporateTemplate event={event} />
-          <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
         </>
       );
     case 'party':
       return (
         <>
           <PartyTemplate event={event} />
-          <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
         </>
       );
     case 'modern':
@@ -58,7 +55,6 @@ export default async function EventPage({
       return (
         <>
           <ModernTemplate event={event} />
-          <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
         </>
       );
   }

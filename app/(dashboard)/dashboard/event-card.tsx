@@ -375,6 +375,7 @@ export default function EventCard({ event }: { event: Event }) {
         isOpen={stageModalOpen}
         onClose={() => setStageModalOpen(false)}
         eventId={event.id}
+        slug={event.slug}
         initialConfig={event.stageConfig}
       />
     </>

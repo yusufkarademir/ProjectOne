@@ -482,6 +482,7 @@ export default function SocialLiveDisplay({ initialPhotos, slug, eventName, qrCo
                 isOpen={showStageModal} 
                 onClose={() => setShowStageModal(false)} 
                 eventId={eventId || ''}
+                slug={slug}
                 initialConfig={stageConfig}
             />
         )}

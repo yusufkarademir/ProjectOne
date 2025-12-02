@@ -107,7 +107,7 @@ export default async function SocialWallPage({ params }: { params: Promise<{ slu
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-40 md:right-[calc(50%-20px)] md:translate-x-[200px]">
         <Link 
-          href={`/e/${slug}/upload`}
+          href={`/e/${slug}/upload?from=social`}
           className="flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all"
         >
           <Plus size={28} />

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import GalleryGrid from '../../../../components/GalleryGrid';
 import { Home, ChevronRight, Upload, ArrowLeft } from 'lucide-react';
+import FaceFinder from '@/app/components/ai/FaceFinder';
 
 export default async function GalleryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -30,6 +31,7 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
   const theme = themeConfig.theme || 'default';
   const font = themeConfig.font || 'inter';
   const frameStyle = themeConfig.frame || 'none';
+  const watermarkText = (event as any).isWatermarkEnabled ? event.name : null;
   
   const isGalleryPublic = privacyConfig.isGalleryPublic !== false; // Default true
   const allowDownload = privacyConfig.allowDownload !== false;     // Default true
@@ -180,6 +182,7 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
           />
         )}
       </div>
+      <FaceFinder slug={event.slug} frameStyle={frameStyle} watermarkText={watermarkText} />
     </div>
   );
 }

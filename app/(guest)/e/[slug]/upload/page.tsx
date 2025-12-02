@@ -4,7 +4,7 @@ import UploadForm from './upload-form';
 import Link from 'next/link';
 import { Home, ChevronRight, ArrowLeft, Image as ImageIcon } from 'lucide-react';
 
-export default async function UploadPageWrapper({ params }: { params: Promise<{ slug: string }> }) {
+export default async function UploadPageWrapper({ params, searchParams }: { params: Promise<{ slug: string }>, searchParams: { from?: string } }) {
   const { slug } = await params;
   const event = await prisma.event.findUnique({
     where: { slug },
@@ -97,7 +97,7 @@ export default async function UploadPageWrapper({ params }: { params: Promise<{ 
 
           <div className={`mt-6 pt-6 border-t flex justify-center gap-3 ${theme === 'dark' || theme === 'party' ? 'border-gray-700' : 'border-gray-100'}`}>
             <Link 
-              href={`/e/${event.slug}`}
+              href={searchParams?.from === 'social' ? `/e/${event.slug}/social` : `/e/${event.slug}`}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${styles.textMuted} hover:${styles.text} hover:bg-gray-100/10`}
             >
               <ArrowLeft size={18} />

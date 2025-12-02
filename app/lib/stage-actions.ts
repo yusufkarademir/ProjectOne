@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 
 export interface StageConfig {
   isActive: boolean;
-  mode: 'lounge' | 'hype' | 'cinema';
+  mode: 'lounge' | 'hype' | 'cinema' | 'live-video';
   title?: string;
   message?: string;
   showClock?: boolean;
@@ -16,6 +16,7 @@ export interface StageConfig {
   countdownDuration?: number; // in minutes
   countdownTarget?: string; // ISO date string
   videoUrl?: string;
+  jitsiRoom?: string;
 }
 
 export async function updateStageMode(eventId: string, config: Partial<StageConfig>) {
@@ -23,7 +24,7 @@ export async function updateStageMode(eventId: string, config: Partial<StageConf
     const event = await prisma.event.findUnique({
       where: { id: eventId },
       // @ts-ignore: Schema mismatch workaround
-      select: { stageConfig: true }
+      select: { stageConfig: true, slug: true }
     });
 
     if (!event) {
@@ -41,7 +42,7 @@ export async function updateStageMode(eventId: string, config: Partial<StageConf
       }
     });
 
-    revalidatePath(`/e/${eventId}/social-live`);
+    revalidatePath(`/e/${event.slug}/live`);
     return { success: true, message: 'Sahne modu güncellendi' };
   } catch (error) {
     console.error('Error updating stage mode:', error);
@@ -54,7 +55,7 @@ export async function toggleStageMode(eventId: string, isActive: boolean) {
     const event = await prisma.event.findUnique({
       where: { id: eventId },
       // @ts-ignore: Schema mismatch workaround
-      select: { stageConfig: true }
+      select: { stageConfig: true, slug: true }
     });
 
     if (!event) {
@@ -74,7 +75,7 @@ export async function toggleStageMode(eventId: string, isActive: boolean) {
       }
     });
 
-    revalidatePath(`/e/${eventId}/social-live`);
+    revalidatePath(`/e/${event.slug}/live`);
     return { success: true, message: isActive ? 'Sahne modu aktif' : 'Sahne modu kapatıldı' };
   } catch (error) {
     console.error('Error toggling stage mode:', error);

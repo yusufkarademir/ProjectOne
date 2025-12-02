@@ -36,10 +36,21 @@ export async function updateSocialSettings(eventId: string, settings: any) {
     const event = await prisma.event.findUnique({ where: { id: eventId } });
     if (!event || event.organizerId !== user.id) return { success: false, message: 'Unauthorized' };
 
+    // Sync with privacyConfig.requireModeration if requireApproval is changed
+    const updateData: any = { socialSettings: settings };
+    
+    if (typeof settings.requireApproval !== 'undefined') {
+      const currentPrivacyConfig = (event.privacyConfig as any) || {};
+      updateData.privacyConfig = {
+        ...currentPrivacyConfig,
+        requireModeration: settings.requireApproval
+      };
+    }
+
     await prisma.event.update({
       where: { id: eventId },
       // @ts-ignore: Schema mismatch workaround
-      data: { socialSettings: settings }
+      data: updateData
     });
 
     revalidatePath(`/events/${eventId}`);
@@ -473,6 +484,33 @@ export async function togglePanicMode(eventId: string, isPanic: boolean) {
   }
 }
 
+export async function toggleModerationMode(eventId: string, isEnabled: boolean) {
+  const session = await auth();
+  if (!session?.user?.email) return { success: false, message: 'Unauthorized' };
+
+  try {
+    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+    if (!user) return { success: false, message: 'User not found' };
+
+    const event = await prisma.event.findUnique({ where: { id: eventId } });
+    if (!event || event.organizerId !== user.id) return { success: false, message: 'Unauthorized' };
+
+    const currentSettings = ((event as any).socialSettings as any) || {};
+    const newSettings = {
+      ...currentSettings,
+      requireApproval: isEnabled
+    };
+
+    // We can reuse updateSocialSettings logic but let's do it explicitly here to ensure sync logic runs if we were calling the update function.
+    // But since we are modifying the DB directly here, we need to duplicate the sync logic OR call updateSocialSettings.
+    // Calling updateSocialSettings is better.
+    
+    return await updateSocialSettings(eventId, newSettings);
+  } catch (error) {
+    return { success: false, message: 'Failed to toggle moderation mode' };
+  }
+}
+
 // --- Social Feed (Live) ---
 
 export async function getSocialFeed(slug: string, after?: string) {
@@ -548,7 +586,7 @@ export async function getSocialFeed(slug: string, after?: string) {
       ...reactions.map((r: any) => ({ type: 'reaction', data: r, timestamp: r.createdAt }))
     ].sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-    return { success: true, feed, panicMode: false, stageConfig };
+    return { success: true, feed, panicMode: false, stageConfig, socialSettings: settings };
   } catch (error) {
     console.error('Get social feed error:', error);
     return { success: false, feed: [] };
