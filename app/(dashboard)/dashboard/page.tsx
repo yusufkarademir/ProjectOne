@@ -1,7 +1,7 @@
 import { auth } from '../../../auth';
 import { prisma } from '../../../lib/db';
 import Link from 'next/link';
-import { Calendar, Image as ImageIcon, QrCode, Plus, Home, ChevronRight } from 'lucide-react';
+import { Calendar, Image as ImageIcon, QrCode, Plus, Home, ChevronRight, Shield } from 'lucide-react';
 import DashboardFilters from './dashboard-filters';
 import EventCard from './event-card';
 import DashboardTourWrapper from './dashboard-tour-wrapper';
@@ -82,6 +82,32 @@ export default async function DashboardPage({
             Genel Bakış
         </h1>
         <p className="text-gray-500 mt-1 ml-11">Etkinliklerinizi buradan yönetebilirsiniz.</p>
+      </div>
+
+      {/* Moderator Guide Banner */}
+      <div className="mb-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 text-white shadow-lg flex items-center justify-between relative overflow-hidden group">
+        <div className="relative z-10">
+          <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
+            <Shield className="text-blue-200" size={24} />
+            Moderatör Rehberi
+          </h2>
+          <p className="text-blue-100 max-w-xl mb-4">
+            Canlı yayın ekranlarını, mavi kalkan menüsünü ve moderasyon araçlarını nasıl kullanacağınızı öğrenin.
+          </p>
+          <Link 
+            href="/dashboard/moderator-guide" 
+            className="inline-flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-50 transition-colors"
+          >
+            Rehberi İncele
+            <ChevronRight size={16} />
+          </Link>
+        </div>
+        
+        {/* Decorative Background Elements */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-white/10 to-transparent skew-x-12 transform translate-x-10" />
+        <div className="absolute -right-10 -bottom-10 text-white/10 transform rotate-12 group-hover:scale-110 transition-transform duration-500">
+            <Shield size={180} />
+        </div>
       </div>
       
       {/* Stats Cards */}

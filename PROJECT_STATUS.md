@@ -1,9 +1,9 @@
-# Proje Durumu: Etkinlik QR & Sosyal Duvar (v1.4.1)
+# Proje Durumu: Etkinlik QR & Sosyal Duvar (v1.4.2)
 
-## 📅 Son Güncelleme: 02 Aralık 2025
+## 📅 Son Güncelleme: 04 Aralık 2025
 
 ## 🚀 Genel Bakış
-Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar, moderasyon ve **gelişmiş sahne yönetimi** özelliklerini içeren kapsamlı bir platform haline gelmiştir. **v1.4.1** güncellemesi ile Sahne Modu Spotify entegrasyonu güçlendirilmiş ve anasayfa görsel tasarımı yenilenmiştir.
+Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar, moderasyon ve **gelişmiş sahne yönetimi** özelliklerini içeren kapsamlı bir platform haline gelmiştir. **v1.4.2** güncellemesi ile Anasayfa Hero bölümü tamamen yenilenmiş, marka kimliği (Logo) oluşturulmuş ve Moderatör Rehberi genişletilmiştir.
 
 ## ✅ Tamamlanan Özellikler
 
@@ -18,7 +18,9 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 - Fotoğraf ve video yükleme
 - Galeri görüntüleme ve indirme
 - Beğeni ve yorum yapma
-- **Anasayfa Yenilemesi (v1.4.1):** Statik görseller yerine **Kod Tabanlı İnteraktif Demo** (Framer Motion) ile uygulamanın çalışma mantığını gösteren canlı simülasyon.
+- **Anasayfa Yenilemesi (v1.4.2):**
+  - **Hero Overhaul:** Eski cihaz maketleri yerine "Dijital Akış" (Abstract Flow) konseptli, çerçevesiz ve sürükleyici yeni animasyon.
+  - **Yeni Logo:** Mavi yuvarlatılmış kare içinde QR ikonu ve "EtkinlikQR" yazısı ile kurumsal kimlik oluşturuldu.
 
 ### 3. Sosyal Duvar (Live)
 - **Netflix Tarzı Vitrin:** `/live` rotasında akan fotoğraf slayt gösterisi.
@@ -39,6 +41,10 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 - **Küfür Filtresi:** Yorumlarda otomatik yıldızlama (***).
 - **Manuel Onay Modu:** Yorumlar ve fotoğraflar moderatör onayına düşer.
 - **Canlı Moderasyon Paneli:** `/social-live` ekranında sağ altta gizli panel.
+- **Moderatör Rehberi (v1.4.2):**
+  - Yeni bölümler eklendi: Sahne Yönetimi ve Canlı Bağlantı (Jitsi).
+  - Görsel simülasyonlarla zenginleştirilmiş anlatım.
+  - Dashboard Sidebar'a "Yardım / Rehber" ve "Ana Sayfaya Dön" linkleri eklendi.
 - **Panic Button:** Acil durumlarda yayını durdurma.
 
 ## 🛠️ Teknik Altyapı
@@ -57,3 +63,4 @@ Proje, etkinlikler için QR tabanlı fotoğraf paylaşımı, canlı sosyal duvar
 ## 📝 Notlar
 - Proje **Production Ready** (Canlıya Hazır) durumdadır.
 - `.env` dosyasındaki `DATABASE_URL` ve `R2_` ayarlarının doğruluğundan emin olun.
+

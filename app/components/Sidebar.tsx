@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, PlusCircle, LogOut, Settings, Image as ImageIcon, ChevronRight, Calendar, User as UserIcon, X } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, LogOut, Settings, Image as ImageIcon, ChevronRight, Calendar, User as UserIcon, X, HelpCircle, Home } from 'lucide-react';
 import { signOut } from 'next-auth/react';
+import { useState } from 'react';
+import DeveloperCreditsModal from './ui/DeveloperCreditsModal';
+import Logo from './ui/Logo';
 
 interface SidebarProps {
   user?: {
@@ -31,10 +34,21 @@ const menuItems = [
     href: '/settings',
     icon: Settings,
   },
+  {
+    title: 'Yardım / Rehber',
+    href: '/dashboard/moderator-guide',
+    icon: HelpCircle,
+  },
+  {
+    title: 'Ana Sayfaya Dön',
+    href: '/',
+    icon: Home,
+  },
 ];
 
 export default function Sidebar({ user, recentEvents = [], isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const [showCredits, setShowCredits] = useState(false);
 
   return (
     <>
@@ -52,14 +66,7 @@ export default function Sidebar({ user, recentEvents = [], isOpen = false, onClo
       `}>
         {/* Brand */}
         <div className="p-6 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                    <span className="font-bold text-lg">E</span>
-                </div>
-                <h1 className="text-xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                    EtkinlikQR
-                </h1>
-            </div>
+            <Logo variant="light" />
             {/* Mobile Close Button */}
             <button 
                 onClick={onClose}
@@ -164,8 +171,20 @@ export default function Sidebar({ user, recentEvents = [], isOpen = false, onClo
           <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
           Çıkış Yap
         </button>
+
+        <button 
+            onClick={() => setShowCredits(true)}
+            className="w-full text-center text-[10px] text-slate-600 hover:text-slate-400 mt-4 transition-colors font-medium tracking-wider uppercase"
+        >
+            Developed by Yusuf KARADEMİR
+        </button>
       </div>
       </aside>
+
+      <DeveloperCreditsModal 
+        isOpen={showCredits} 
+        onClose={() => setShowCredits(false)} 
+      />
     </>
   );
 }

@@ -27,13 +27,13 @@ const InteractiveDemo = () => {
   };
 
   return (
-    <div className="relative w-full aspect-[16/9] lg:aspect-[21/9] flex items-center justify-center bg-slate-50 rounded-[2.5rem] overflow-hidden border-8 border-white shadow-2xl shadow-indigo-200">
+    <div className="relative w-full aspect-[16/9] flex items-center justify-center bg-slate-50 rounded-[2.5rem] overflow-hidden border-8 border-white shadow-2xl shadow-indigo-200">
       {/* Background Decor */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
 
-      <div className="relative z-10 flex items-center gap-4 md:gap-12 lg:gap-20 scale-[0.45] md:scale-75 lg:scale-90 transition-transform origin-center">
+      <div className="relative z-10 flex items-center gap-4 md:gap-8 lg:gap-12 scale-[0.35] md:scale-60 lg:scale-[0.75] transition-transform origin-center">
         
         {/* PHONE MOCKUP */}
         <div className="relative">
